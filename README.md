@@ -1,5 +1,5 @@
-## Gridking Energy Calculation utils
+# Gridking Energy Calculation utils
 
-# Description
+## Description
 A small piece of frontend code that aggregates and calculate the
 total amount of energy required to power appliances
