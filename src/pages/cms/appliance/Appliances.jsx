@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
-import ErrorMessage from '../../components/alerts/ErrorMessage';
-import Loader from '../../components/alerts/Loader';
-import Empty from '../../components/alerts/Empty';
-import Modal from '../../components/utils/Modal';
-import ApplianceForm from '../../components/cms/ApplianceForm';
+import ErrorMessage from '../../../components/alerts/ErrorMessage';
+import Loader from '../../../components/alerts/Loader';
+import Empty from '../../../components/alerts/Empty';
+import Modal from '../../../components/utils/Modal';
+import ApplianceForm from '../../../components/cms/ApplianceForm';
 
 
 function Appliances() {
@@ -109,12 +110,12 @@ function Appliances() {
                   {formatDate(appliance.updatedAt)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
+                  <Link to="/cms/appliances/edit" state={{ appliance }}  className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                     Edit
-                  </button>
-                  <button className="text-red-600 hover:text-red-900 transition-colors duration-150">
+                  </Link>
+                  <Link to="/cms/appliances/delete" state={{ appliance }}  className="text-red-600 hover:text-red-900 transition-colors duration-150">
                     Delete
-                  </button>
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -122,7 +123,7 @@ function Appliances() {
         </table>
       </div>
       <Modal isOpen={isModalOpen} onClose={toggleModal}>
-        <ApplianceForm title={'Create Appliance'} endpoint={endpoint} />
+        <ApplianceForm title={'Create Appliance'} endpoint={endpoint} method={'post'} />
         <button
           onClick={toggleModal}
           className="mt-4 bg-red-500 text-white py-2 px-4 rounded"

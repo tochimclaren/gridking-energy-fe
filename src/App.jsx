@@ -8,7 +8,10 @@ import MainAppliance from './pages/main/Appliance';
 import Dashboard from './pages/cms/Dashboard';
 import MainLayout from './layout/MainLayout';
 import CmsLayout from './layout/CmsLayout';
-import CMSAppliance from './pages/cms/Appliances';
+import CMSAppliance from './pages/cms/appliance/Appliances';
+import UpdateAppliance from './pages/cms/appliance/UpdateAppliance';
+import DeleteAppliance from './pages/cms/appliance/DeleteAppliance';
+
 
 function App() {
   return (
@@ -25,6 +28,8 @@ function App() {
         <Route element={<CmsLayout />}>
           <Route path="/cms/dashboard" element={<Dashboard />} />
           <Route path="/cms/appliances" element={<CMSAppliance />} />
+          <Route path="/cms/appliances/edit" element={<UpdateAppliance />} />
+          <Route path="/cms/appliances/delete" element={<DeleteAppliance />} />
         </Route>
       </Routes>
     </BrowserRouter>
