@@ -11,7 +11,15 @@ import CmsLayout from './layout/CmsLayout';
 import CMSAppliance from './pages/cms/appliance/Appliances';
 import UpdateAppliance from './pages/cms/appliance/UpdateAppliance';
 import DeleteAppliance from './pages/cms/appliance/DeleteAppliance';
-
+import Products from './pages/cms/product/Products';
+import DeleteProduct from './pages/cms/product/DeleteProduct';
+import UpdateProduct from './pages/cms/product/UpdateProduct';
+import Categories from './pages/cms/category/Categories';
+import DeleteCategory from './pages/cms/category/DeleteCategory';
+import UpdateCategory from './pages/cms/category/UpdateCategory';
+import Carousels from './pages/cms/carousel/Carousels';
+import UpdateCarousel from './pages/cms/carousel/UpdateCarousel';
+import DeleteCarousel from './pages/cms/carousel/DeleteCarousel';
 
 function App() {
   return (
@@ -27,9 +35,22 @@ function App() {
         </Route>
         <Route element={<CmsLayout />}>
           <Route path="/cms/dashboard" element={<Dashboard />} />
+          {/* Appliance route */}
           <Route path="/cms/appliances" element={<CMSAppliance />} />
           <Route path="/cms/appliances/edit" element={<UpdateAppliance />} />
           <Route path="/cms/appliances/delete" element={<DeleteAppliance />} />
+          {/* Product route */}
+          <Route path="/cms/products" element={<Products />} />
+          <Route path="/cms/products/edit" element={<UpdateProduct />} />
+          <Route path="/cms/products/delete" element={<DeleteProduct />} />
+          {/* Categories route */}
+          <Route path="/cms/categories" element={<Categories />} />
+          <Route path="/cms/categories/edit" element={<UpdateCategory />} />
+          <Route path="/cms/categories/delete" element={<DeleteCategory />} />
+          {/* Carousel route */}
+          <Route path="/cms/carousels" element={<Carousels />} />
+          <Route path="/cms/carousels/edit" element={<UpdateCarousel />} />
+          <Route path="/cms/carousels/delete" element={<DeleteCarousel />} />
         </Route>
       </Routes>
     </BrowserRouter>

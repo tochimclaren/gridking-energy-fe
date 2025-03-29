@@ -6,10 +6,10 @@ function Sidebar() {
     const location = useLocation();
 
     const menuItems = [
-        { label: 'Appliances', icon: '📊', path: '/cms/appliances' },
-        // { label: 'Projects', icon: '📁', path: '/projects' },
-        // { label: 'Tasks', icon: '✓', path: '/tasks' },
-        // { label: 'Calendar', icon: '📅', path: '/calendar' },
+        { label: 'Appliances', icon: '', path: '/cms/appliances' },
+        { label: 'Products', icon: '', path: '/cms/products' },
+        { label: 'Categories', icon: '', path: '/cms/categories' },
+        { label: 'Carousels', icon: '', path: '/cms/carousels' },
         // { label: 'Reports', icon: '📈', path: '/reports' },
         // { label: 'Settings', icon: '⚙️', path: '/settings' },
     ];

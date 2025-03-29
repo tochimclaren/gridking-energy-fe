@@ -5,7 +5,7 @@ import ErrorMessage from '../../../components/alerts/ErrorMessage';
 import Loader from '../../../components/alerts/Loader';
 import Empty from '../../../components/alerts/Empty';
 import Modal from '../../../components/utils/Modal';
-import ApplianceForm from '../../../components/cms/ApplianceForm';
+import ApplianceForm from '../../../components/cms/appliance/ApplianceForm';
 
 
 function Appliances() {
@@ -110,10 +110,10 @@ function Appliances() {
                   {formatDate(appliance.updatedAt)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <Link to="/cms/appliances/edit" state={{ appliance }}  className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
+                  <Link to="/cms/appliances/edit" state={{ appliance }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                     Edit
                   </Link>
-                  <Link to="/cms/appliances/delete" state={{ appliance }}  className="text-red-600 hover:text-red-900 transition-colors duration-150">
+                  <Link to="/cms/appliances/delete" state={{ appliance }} className="text-red-600 hover:text-red-900 transition-colors duration-150">
                     Delete
                   </Link>
                 </td>
