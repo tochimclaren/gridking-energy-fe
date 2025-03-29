@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import ErrorMessage from '../../components/alerts/ErrorMessage';
+import Empty from '../../components/alerts/Empty';
+import Loader from '../../components/alerts/Loader';
 
 function Appliance() {
   const [appliances, setAppliances] = useState([])
@@ -9,11 +12,12 @@ function Appliance() {
   const [totalWattage, setTotalWattage] = useState(0);
 
   useEffect(() => {
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
     const getAppliance = async () => {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:3000/api/appliance')
+        const response = await axios.get(`${BASE_URL}/appliance`)
         const { data } = response.data
         setAppliances(data)
         setIsLoading(false);
@@ -62,44 +66,24 @@ function Appliance() {
 
   // Loading state
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    <Loader />
   }
 
   // Error state
   if (error) {
-    return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-        <h2 className="text-xl font-bold text-red-700 mb-2">Error</h2>
-        <p className="text-red-600">{error}</p>
-        <button 
-          onClick={() => window.location.reload()} 
-          className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-        >
-          Try Again
-        </button>
-      </div>
-    );
+    <ErrorMessage message={error} />
   }
 
   // Empty state
   if (!appliances || appliances.length === 0) {
-    return (
-      <div className="p-4 text-center">
-        <h2 className="text-xl font-bold mb-2">No Appliances Found</h2>
-        <p className="text-gray-600 mb-4">There are no appliances available at the moment.</p>
-      </div>
-    );
+    <Empty />
   }
 
   // Content when everything is loaded successfully
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Appliances</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column (2/3 width on medium screens and above) */}
         <div className="md:col-span-2 space-y-4">
@@ -152,11 +136,11 @@ function Appliance() {
             </div>
           ))}
         </div>
-        
+
         {/* Right Column (1/3 width on medium screens and above) */}
         <div className="bg-gray-50 p-6 rounded-lg border">
           <h3 className="text-lg font-bold mb-4">Summary</h3>
-          
+
           <div className="space-y-4">
             <div>
               <p className="text-sm text-gray-600">Selected Appliances</p>
@@ -168,18 +152,18 @@ function Appliance() {
                   </li>
                 ))}
               </ul>
-              
+
               {Object.values(selectedAppliances).filter(Boolean).length === 0 && (
                 <p className="text-sm italic text-gray-500 mt-2">No appliances selected</p>
               )}
             </div>
-            
+
             <div className="pt-4 border-t">
               <div className="flex justify-between items-center font-bold">
                 <span>Total Wattage:</span>
                 <span>{totalWattage} watts</span>
               </div>
-              
+
               {totalWattage > 0 && (
                 <div className="mt-2 text-sm text-gray-600">
                   <p>Estimated daily consumption: {(totalWattage * 24 / 1000).toFixed(2)} kWh</p>

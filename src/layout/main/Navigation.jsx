@@ -18,6 +18,9 @@ function Navigation() {
         
         {/* Right side - About & Contact */}
         <div className="flex space-x-6">
+        <Link to="/cms/dashboard" className="font-bold text-white hover:text-gray-500 transition">
+            CMS
+          </Link>
           <Link to="/about" className="text-white hover:text-gray-300 transition">
             About
           </Link>
