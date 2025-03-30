@@ -5,7 +5,7 @@ import ErrorMessage from '../../../components/alerts/ErrorMessage';
 import Loader from '../../../components/alerts/Loader';
 import Empty from '../../../components/alerts/Empty';
 import Modal from '../../../components/utils/Modal';
-import CategoryForm from '../../../components/cms/category/CategoryForm';
+import CarouselForm from '../../../components/cms/carousel/CarouselForm';
 
 function Carousels() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -17,7 +17,6 @@ function Carousels() {
     const toggleModal = () => setIsModalOpen(!isModalOpen);
 
     useEffect(() => {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
         const getCarousel = async () => {
             try {
                 setIsLoading(true);
@@ -62,7 +61,7 @@ function Carousels() {
     // Content when everything is loaded successfully
     return (
         <div className="p-4">
-            <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">Carousels</h2>
             <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
                 Add Carousel
             </button>
@@ -118,7 +117,7 @@ function Carousels() {
                 </table>
             </div>
             <Modal isOpen={isModalOpen} onClose={toggleModal}>
-                <CategoryForm title={'Create Carousel'} endpoint={endpoint} />
+                <CarouselForm title={'Create Carousel'} endpoint={endpoint} />
                 <button
                     onClick={toggleModal}
                     className="mt-4 bg-red-500 text-white py-2 px-4 rounded">

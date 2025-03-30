@@ -1,110 +1,116 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const DeleteCarousel = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const { carousel } = location.state || {};
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const endpoint = `${BASE_URL}/carousel`
+  const location = useLocation();
+  const navigate = useNavigate();
+  const carouselData = location.state?.carousel;
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState('');
 
-    const [status, setStatus] = useState({
-        loading: false,
-        error: '',
-    });
-
-    useEffect(() => {
-        // If no product data was passed, redirect to products list
-        if (!carousel) {
-            navigate('/cms/carousels');
-        }
-    }, [carousel, navigate]);
-
-    const handleDelete = async () => {
-        setStatus({
-            loading: true,
-            error: '',
-        });
-
-        try {
-            await axios.delete(`/carousel/${product._id}`);
-
-            // Show brief success message then redirect
-            setTimeout(() => {
-                navigate('/cms/carousels', {
-                    state: { message: `${product.name} has been deleted successfully.` }
-                });
-            }, 500);
-
-        } catch (error) {
-            setStatus({
-                loading: false,
-                error: error.response?.data?.message || 'An error occurred while deleting the product.',
-            });
-        }
-    };
-
-    const handleCancel = () => {
-        navigate('/cms/carousels');
-    };
-
-    if (!carousel) {
-        return <div className="flex justify-center items-center h-64">Loading...</div>;
-    }
-
+  // Redirect if no data was passed
+  if (!carouselData) {
     return (
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-            <div className="text-center">
-                <div className="mx-auto flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-12 sm:w-12">
-                    <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                    </svg>
-                </div>
-
-                <h3 className="mt-5 text-xl font-bold text-gray-900">Delete product</h3>
-
-                <div className="mt-4 mb-6">
-                    <p className="text-gray-600">
-                        Are you sure you want to delete <span className="font-semibold text-gray-800">"{product.name}"</span>?
-                    </p>
-                    <p className="mt-2 text-sm text-gray-500">
-                        This action cannot be undone. This will permanently delete the product from the database.
-                    </p>
-                </div>
-
-                {status.error && (
-                    <div className="mb-6 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 text-left">
-                        <p>{status.error}</p>
-                    </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-3 sm:space-y-0 mt-6">
-                    <button
-                        type="button"
-                        onClick={handleDelete}
-                        disabled={status.loading}
-                        className="inline-flex justify-center items-center w-full sm:w-auto px-6 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
-                    >
-                        {status.loading ? (
-                            <span className="flex items-center">
-                                <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Deleting...
-                            </span>
-                        ) : 'Delete product'}
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleCancel}
-                        className="inline-flex justify-center w-full sm:w-auto px-6 py-3 bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-                    >
-                        Cancel
-                    </button>
-                </div>
-            </div>
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 px-4">
+        <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">No Carousel Data</h1>
+          <p className="text-gray-600 mb-6">
+            No carousel data was provided. Please select a carousel to delete.
+          </p>
+          <button
+            onClick={() => navigate('/cms/carousels')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Back to Carousels
+          </button>
         </div>
+      </div>
     );
+  }
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setError('');
+    
+    try {
+      await axios.delete(`${endpoint}/${carouselData._id}`);
+      navigate('/cms/carousels', { 
+        state: { 
+          message: `Carousel "${carouselData.title}" was successfully deleted.`,
+          type: 'success'
+        }
+      });
+    } catch (error) {
+      setError(error.response?.data?.message || 'Failed to delete carousel. Please try again.');
+      setIsDeleting(false);
+    }
+  };
+
+  const handleCancel = () => {
+    navigate('/cms/carousels');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-md mx-auto">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div className="p-6">
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">Delete Carousel</h2>
+            
+            <p className="text-center text-gray-600 mb-6">
+              Are you sure you want to delete the carousel <span className="font-semibold">"{carouselData.title}"</span>? This action cannot be undone.
+            </p>
+            
+            {error && (
+              <div className="mb-6 p-3 bg-red-100 text-red-800 rounded">
+                {error}
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between gap-4">
+              <button
+                onClick={handleCancel}
+                className="w-1/2 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="w-1/2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:bg-red-300"
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 px-6 py-3">
+            <div className="flex items-center">
+              <div className="flex-shrink-0 mr-3">
+                <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <p className="text-sm text-gray-500">
+                This will permanently delete the carousel and all associated data.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default DeleteCarousel;

@@ -1,114 +1,155 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const CarouselForm = ({ title, endpoint }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        wattage: ''
-    });
-    const [status, setStatus] = useState({
-        message: '',
-        type: ''
-    });
-    const [loading, setLoading] = useState(false);
+const CarouselForm = ({ initialData, onSuccessCallback, endpoint }) => {
+    const [formData, setFormData] = useState(
+        initialData || {
+            title: '',
+            description: '',
+            buttonText: '',
+            order: 0,
+            active: true,
+        }
+    );
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormData(prevData => ({
-            ...prevData,
-            [id]: value
-        }));
+        const { name, value, type, checked } = e.target;
+        setFormData({
+            ...formData,
+            [name]: type === 'checkbox' ? checked :
+                type === 'number' ? parseInt(value, 10) : value,
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setStatus({ message: '', type: '' });
+        setIsSubmitting(true);
+        setSubmitStatus({ type: '', message: '' });
 
         try {
-            const response = await axios.post(endpoint, {
-                name: formData.name,
-                wattage: Number(formData.wattage)
+            let response
+            if (initialData) {
+                response = await axios.put(`${endpoint}/${initialData._id}`, formData);
+            }
+            else {
+                response = await axios.post(endpoint, formData);
+            }
+            setSubmitStatus({
+                type: 'success',
+                message: 'Carousel saved successfully!'
             });
+            console.log('Success:', response.data);
 
-            console.log(response)
-
-            setStatus({
-                message: 'Appliance added successfully!',
-                type: 'success'
-            });
-
-            // Clear form after successful submission
-            setFormData({ name: '', wattage: '' });
-
+            // Call the success callback if provided
+            if (typeof onSuccessCallback === 'function') {
+                onSuccessCallback(response.data);
+            }
         } catch (error) {
-            setStatus({
-                message: error.response?.data?.message || 'An error occurred while adding the appliance.',
-                type: 'error'
+            setSubmitStatus({
+                type: 'error',
+                message: `Failed to save carousel: ${error.response?.data?.message || error.message}`
             });
+            console.error('Error:', error);
         } finally {
-            setLoading(false);
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">{title}</h2>
+        <div className="w-full max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">Carousel Settings</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                        Appliance Name
+            {submitStatus.message && (
+                <div className={`mb-4 p-3 rounded ${submitStatus.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                    {submitStatus.message}
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                    <label htmlFor="title" className="block text-gray-700 font-medium mb-2">
+                        Title
                     </label>
                     <input
                         type="text"
-                        id="name"
-                        value={formData.name}
+                        id="title"
+                        name="title"
+                        value={formData.title}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-sky-50 transition-colors"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         required
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label htmlFor="wattage" className="block text-sm font-medium text-gray-700">
-                        Wattage (W)
+                <div className="mb-4">
+                    <label htmlFor="description" className="block text-gray-700 font-medium mb-2">
+                        Description
+                    </label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleChange}
+                        rows="3"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="buttonText" className="block text-gray-700 font-medium mb-2">
+                        Button Text
+                    </label>
+                    <input
+                        type="text"
+                        id="buttonText"
+                        name="buttonText"
+                        value={formData.buttonText}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                </div>
+
+                <div className="mb-4">
+                    <label htmlFor="order" className="block text-gray-700 font-medium mb-2">
+                        Order
                     </label>
                     <input
                         type="number"
-                        id="wattage"
-                        value={formData.wattage}
+                        id="order"
+                        name="order"
+                        value={formData.order}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-sky-50 transition-colors"
-                        required
+                        min="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <span className="flex items-center justify-center">
-                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Submitting...
-                        </span>
-                    ) : 'Submit'}
-                </button>
-            </form>
-
-            {status.message && (
-                <div
-                    className={`mt-6 p-4 rounded-md ${status.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
-                        }`}
-                >
-                    {status.message}
+                <div className="mb-6">
+                    <label className="flex items-center">
+                        <input
+                            type="checkbox"
+                            name="active"
+                            checked={formData.active}
+                            onChange={handleChange}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="ml-2 text-gray-700">Active</span>
+                    </label>
                 </div>
-            )}
+
+                <div className="flex justify-end">
+                    <button
+                        type="submit"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-300"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Saving...' : 'Save Changes'}
+                    </button>
+                </div>
+            </form>
         </div>
     );
 };
