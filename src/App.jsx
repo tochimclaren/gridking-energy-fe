@@ -20,6 +20,7 @@ import UpdateCategory from './pages/cms/category/UpdateCategory';
 import Carousels from './pages/cms/carousel/Carousels';
 import UpdateCarousel from './pages/cms/carousel/UpdateCarousel';
 import DeleteCarousel from './pages/cms/carousel/DeleteCarousel';
+import Images from './pages/cms/Images';
 
 function App() {
   return (
@@ -51,6 +52,8 @@ function App() {
           <Route path="/cms/carousels" element={<Carousels />} />
           <Route path="/cms/carousels/edit" element={<UpdateCarousel />} />
           <Route path="/cms/carousels/delete" element={<DeleteCarousel />} />
+          {/* Carousel route */}
+          <Route path="/cms/images" element={<Images />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -84,6 +84,9 @@ function Products() {
                                 Hot Sell
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Images
+                            </th>
+                            <th scope="col" className="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action
                             </th>
                         </tr>
@@ -98,15 +101,18 @@ function Products() {
                                     {product.name}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {product.status}
+                                    {String(product.status)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {product.category.name}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {product.hotSell}
+                                    {String(product.hotSell)}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <Link to="/cms/images" state={{ product }}>Images</Link>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <Link to="/cms/products/edit" state={{ product }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                                         Edit
                                     </Link>
