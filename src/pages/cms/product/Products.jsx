@@ -15,6 +15,8 @@ function Products() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const endpoint = `${BASE_URL}/product`
     const toggleModal = () => setIsModalOpen(!isModalOpen);
+    const refModel = "Product"
+
 
     useEffect(() => {
         const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -110,7 +112,7 @@ function Products() {
                                     {String(product.hotSell)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <Link to="/cms/images" state={{ product }}>Images</Link>
+                                    <Link to="/cms/images" state={{ data: product, refModel }}>Images</Link>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <Link to="/cms/products/edit" state={{ product }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">

@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const UploadImage = () => {
+const UploadImage = ({refModel, refId}) => {
     const [dragging, setDragging] = useState(false);
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const [uploadProgress, setUploadProgress] = useState({});
+
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const endpoint = `${BASE_URL}/image`
 
     const handleDragEnter = (e) => {
         e.preventDefault();
@@ -68,13 +72,7 @@ const UploadImage = () => {
         formData.append('title', file.name);
 
         try {
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-                // This is how you would track progress with a real fetch API
-                // In practice you might need to use XMLHttpRequest instead
-            });
-
+            const response = await axios.post(endpoint, formData)
             if (!response.ok) {
                 throw new Error(`Upload failed: ${response.status}`);
             }

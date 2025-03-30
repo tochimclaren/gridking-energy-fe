@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const ImageGallery = () => {
+const ImageGallery = ({ refModel, refId }) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const endpoint = `${BASE_URL}/image`
 
+   
     useEffect(() => {
         const fetchImages = async () => {
             setLoading(true);
             try {
-                const response = await fetch('/api/images');
-                if (!response.ok) {
-                    throw new Error(`Error: ${response.status}`);
-                }
-                const data = await response.json();
+                const response = await axios.get(`${endpoint}/${refModel}/${refId}`)
+                console.log(response)
+                const { data } = response
                 setImages(data);
                 setError(null);
             } catch (err) {
