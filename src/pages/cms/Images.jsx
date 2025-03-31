@@ -21,7 +21,7 @@ const Images = () => {
         <>
             <h1 className="text-2xl font-bold mb-6 text-center">Images</h1>
                         
-            <div className="container mx-auto py-6 px-4">
+            <div className="container mx-auto py-6 px-4 min-w-fit">
                 <div className="mb-6">
                     <div className="flex border-b overflow-x-auto">
                         <button

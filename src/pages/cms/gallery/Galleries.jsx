@@ -5,27 +5,31 @@ import ErrorMessage from '../../../components/alerts/ErrorMessage';
 import Loader from '../../../components/alerts/Loader';
 import Empty from '../../../components/alerts/Empty';
 import Modal from '../../../components/utils/Modal';
-import CarouselForm from '../../../components/cms/carousel/CarouselForm';
+import GalleryForm from '../../../components/cms/gallery/GalleryForm';
 
 
-function Carousels() {
+function Galleries() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
-    const [carousels, setCarousel] = useState([])
+    const [galleries, setGalleries] = useState([])
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const endpoint = `${BASE_URL}/carousel`
+    const endpoint = `${BASE_URL}/gallery`
     const toggleModal = () => setIsModalOpen(!isModalOpen);
-    const refModel = "Carousel"
+    const refModel = "Gallery"
 
     useEffect(() => {
-        const getCarousel = async () => {
+        const getGallery = async () => {
             try {
                 setIsLoading(true);
                 setError(null);
                 const response = await axios.get(endpoint)
-                const { data } = response
-                setCarousel(data)
+
+                const { data } = response.data
+                console.log(data)
+
+                console.log(data)
+                setGalleries(data)
                 setIsLoading(false);
             } catch (err) {
                 if (axios.isCancel(err)) {
@@ -36,9 +40,9 @@ function Carousels() {
                 }
             }
         }
-        getCarousel()
-    }, [])
 
+        getGallery()
+    }, [])
     // Loading state
     if (isLoading) {
         <Loader />
@@ -48,35 +52,29 @@ function Carousels() {
         <ErrorMessage message={error} />
     }
     // Empty state
-    if (!carousels || carousels.length === 0) {
+    if (!galleries || galleries.length === 0) {
         <Empty />
     }
 
     // Content when everything is loaded successfully
     return (
         <div className="p-4">
-            <h2 className="text-xl font-bold mb-4 text-center">Carousels</h2>
+            <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
             <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
-                Add Carousel
+                Add Categories
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
                 <table className="w-full table-fixed divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Title
-                            </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Active
-                            </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Order
-                            </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Images
+                                Name
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Description
+                            </th>
+                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Is Public
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action
@@ -84,30 +82,27 @@ function Carousels() {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {carousels.map((carousel, index) => (
+                        {galleries.map((gallery, index) => (
                             <tr
-                                key={carousel._id}
+                                key={gallery._id}
                                 className={`transition-colors duration-150 ease-in-out hover:bg-blue-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {carousel.title}
+                                    {gallery.name}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {carousel.active}
+                                    {gallery.description}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {carousel.order}
+                                    {String(gallery.isPublic)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <Link to="/cms/images" state={{ data: carousel, refModel }}>Images</Link>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {carousel.description}
+                                    <Link to="/cms/images" state={{ data: gallery, refModel }}>Images</Link>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <Link to="/cms/carousels/edit" state={{ carousel }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
+                                    <Link to="/cms/galleries/edit" state={{ gallery }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                                         Edit
                                     </Link>
-                                    <Link to="/cms/carousels/delete" state={{ carousel }} className="text-red-600 hover:text-red-900 transition-colors duration-150">
+                                    <Link to="/cms/galleries/delete" state={{ gallery }} className="text-red-600 hover:text-red-900 transition-colors duration-150">
                                         Delete
                                     </Link>
                                 </td>
@@ -117,7 +112,7 @@ function Carousels() {
                 </table>
             </div>
             <Modal isOpen={isModalOpen} onClose={toggleModal}>
-                <CarouselForm title={'Create Carousel'} endpoint={endpoint} />
+                <GalleryForm title={'Create Gallery'} endpoint={endpoint} />
                 <button
                     onClick={toggleModal}
                     className="mt-4 bg-red-500 text-white py-2 px-4 rounded">
@@ -128,4 +123,4 @@ function Carousels() {
     );
 }
 
-export default Carousels
+export default Galleries

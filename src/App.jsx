@@ -21,6 +21,9 @@ import Carousels from './pages/cms/carousel/Carousels';
 import UpdateCarousel from './pages/cms/carousel/UpdateCarousel';
 import DeleteCarousel from './pages/cms/carousel/DeleteCarousel';
 import Images from './pages/cms/Images';
+import Galleries from './pages/cms/gallery/Galleries';
+import UpdateGallery from './pages/cms/category/UpdateCategory';
+import DeleteGallery from './pages/cms/gallery/DeleteGallery';
 
 function App() {
   return (
@@ -54,6 +57,10 @@ function App() {
           <Route path="/cms/carousels/delete" element={<DeleteCarousel />} />
           {/* Carousel route */}
           <Route path="/cms/images" element={<Images />} />
+          {/* Gallery route */}
+          <Route path="/cms/galleries" element={<Galleries />} />
+          <Route path="/cms/galleries/edit" element={<UpdateGallery />} />
+          <Route path="/cms/galleries/delete" element={<DeleteGallery />} />
         </Route>
       </Routes>
     </BrowserRouter>

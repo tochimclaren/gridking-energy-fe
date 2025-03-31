@@ -10,7 +10,7 @@ function Sidebar() {
         { label: 'Products', icon: '', path: '/cms/products' },
         { label: 'Categories', icon: '', path: '/cms/categories' },
         { label: 'Carousels', icon: '', path: '/cms/carousels' },
-        // { label: 'Reports', icon: '📈', path: '/reports' },
+        { label: 'Galleries', icon: '', path: '/cms/galleries' },
         // { label: 'Settings', icon: '⚙️', path: '/settings' },
     ];
 

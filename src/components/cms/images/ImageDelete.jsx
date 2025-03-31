@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios"
 
-const DeleteImage = () => {
+const DeleteImage = ({refModel, refId}) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10,7 +10,7 @@ const DeleteImage = () => {
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [deleteStatus, setDeleteStatus] = useState({ success: false, message: null });
     const BASE_URL = import.meta.env.VITE_BASE_URL;
-    const endpoint = `${BASE_URL}/image`
+    const endpoint = `${BASE_URL}/image/${refModel}/${refId}`
 
     useEffect(() => {
         const fetchImages = async () => {
@@ -156,7 +156,7 @@ const DeleteImage = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {images.map((image) => (
                             <div
-                                key={image.id}
+                                key={image._id}
                                 className={`relative border rounded-lg overflow-hidden ${selectedImages.includes(image.id) ? 'ring-2 ring-blue-500' : ''
                                     }`}
                             >
