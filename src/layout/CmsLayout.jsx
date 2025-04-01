@@ -14,9 +14,7 @@ function CmsLayout() {
 
             <main className="flex h-screen">
                 <Sidebar />
-                <div className="px-4">
-                    <Outlet /> {/* This is where child routes will render in a container */}
-                </div>
+                <Outlet />
             </main>
             <Footer />
         </div>

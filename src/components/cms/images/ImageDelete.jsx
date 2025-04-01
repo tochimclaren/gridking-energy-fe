@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios"
 
-const DeleteImage = ({refModel, refId}) => {
+const DeleteImage = ({ refModel, refId }) => {
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,6 +18,7 @@ const DeleteImage = ({refModel, refId}) => {
             try {
                 const response = await axios.get(endpoint)
                 const { data } = response
+                console.log(data)
                 setImages(data);
                 setError(null);
             } catch (err) {
@@ -43,7 +44,7 @@ const DeleteImage = ({refModel, refId}) => {
         if (selectedImages.length === images.length) {
             setSelectedImages([]);
         } else {
-            setSelectedImages(images.map(img => img.id));
+            setSelectedImages(images.map(img => img._id));
         }
     };
 
@@ -68,7 +69,7 @@ const DeleteImage = ({refModel, refId}) => {
             }
 
             // Update local state to remove deleted images
-            setImages(prev => prev.filter(img => !selectedImages.includes(img.id)));
+            setImages(prev => prev.filter(img => !selectedImages.includes(img._id)));
             setDeleteStatus({
                 success: true,
                 message: `Successfully deleted ${selectedImages.length} image${selectedImages.length !== 1 ? 's' : ''}.`
@@ -157,15 +158,15 @@ const DeleteImage = ({refModel, refId}) => {
                         {images.map((image) => (
                             <div
                                 key={image._id}
-                                className={`relative border rounded-lg overflow-hidden ${selectedImages.includes(image.id) ? 'ring-2 ring-blue-500' : ''
+                                className={`relative border rounded-lg overflow-hidden ${selectedImages.includes(image._id) ? 'ring-2 ring-blue-500' : ''
                                     }`}
                             >
                                 <div className="absolute top-2 left-2 z-10">
                                     <input
                                         type="checkbox"
-                                        id={`img-${image.id}`}
-                                        checked={selectedImages.includes(image.id)}
-                                        onChange={() => toggleImageSelection(image.id)}
+                                        id={`img-${image._id}`}
+                                        checked={selectedImages.includes(image._id)}
+                                        onChange={() => toggleImageSelection(image._id)}
                                         className="h-4 w-4"
                                     />
                                 </div>
@@ -175,7 +176,7 @@ const DeleteImage = ({refModel, refId}) => {
                                     className="w-full h-48 object-cover"
                                 />
                                 <div className="p-2 bg-white">
-                                    <p className="truncate text-sm font-medium">{image.title || "Untitled"}</p>
+                                    <p className="truncate text-sm font-medium">{String(image.primary)}</p>
                                 </div>
                             </div>
                         ))}

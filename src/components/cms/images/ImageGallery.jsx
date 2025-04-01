@@ -91,7 +91,7 @@ const ImageGallery = ({ refModel, refId }) => {
                                 className="w-full h-48 object-cover"
                             />
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {image.title || `Untitled Image`}
+                                {String(image.primary)}
                             </div>
                         </div>
                     ))}

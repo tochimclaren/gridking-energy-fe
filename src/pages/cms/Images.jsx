@@ -18,55 +18,52 @@ const Images = () => {
     };
 
     return (
-        <>
-            <h1 className="text-2xl font-bold mb-6 text-center">Images</h1>
-                        
-            <div className="container mx-auto py-6 px-4 min-w-fit">
-                <div className="mb-6">
-                    <div className="flex border-b overflow-x-auto">
-                        <button
-                            className={`px-4 py-2 font-medium ${activeTab === 'view'
-                                ? 'border-b-2 border-blue-500 text-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                            onClick={() => setActiveTab('view')}
-                        >
-                            View Images
-                        </button>
-                        <button
-                            className={`px-4 py-2 font-medium ${activeTab === 'upload'
-                                ? 'border-b-2 border-blue-500 text-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                            onClick={() => setActiveTab('upload')}
-                        >
-                            Upload
-                        </button>
-                        <button
-                            className={`px-4 py-2 font-medium ${activeTab === 'delete'
-                                ? 'border-b-2 border-blue-500 text-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                            onClick={() => setActiveTab('delete')}
-                        >
-                            Manage
-                        </button>
-                    </div>
-                </div>
-
-                <div className="transition-opacity duration-300">
-                    {activeTab === 'view' && <ImageGallery key={`gallery-${refreshTrigger}`} refModel={refModel} refId={refId} />}
-                    {activeTab === 'upload' && (
-                        <ImageUpload key={`upload-${refreshTrigger}`} onUploadComplete={() => {
-                                refreshData(); setActiveTab('view'); }} refModel={refModel} refId={refId}/>
-                    )}
-                    {activeTab === 'delete' && (
-                        <ImageDelete key={`delete-${refreshTrigger}`}
-                            onDeleteComplete={() => { refreshData(); }} refModel={refModel} refId={refId} />
-                    )}
+        <div className="container mx-auto py-6 px-4 min-w-fit">
+            <div className="mb-6">
+                <div className="flex border-b overflow-x-auto">
+                    <button
+                        className={`px-4 py-2 font-medium ${activeTab === 'view'
+                            ? 'border-b-2 border-blue-500 text-blue-600'
+                            : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        onClick={() => setActiveTab('view')}
+                    >
+                        View Images
+                    </button>
+                    <button
+                        className={`px-4 py-2 font-medium ${activeTab === 'upload'
+                            ? 'border-b-2 border-blue-500 text-blue-600'
+                            : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        onClick={() => setActiveTab('upload')}
+                    >
+                        Upload
+                    </button>
+                    <button
+                        className={`px-4 py-2 font-medium ${activeTab === 'delete'
+                            ? 'border-b-2 border-blue-500 text-blue-600'
+                            : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                        onClick={() => setActiveTab('delete')}
+                    >
+                        Manage
+                    </button>
                 </div>
             </div>
-        </>
+
+            <div className="transition-opacity duration-300">
+                {activeTab === 'view' && <ImageGallery key={`gallery-${refreshTrigger}`} refModel={refModel} refId={refId} />}
+                {activeTab === 'upload' && (
+                    <ImageUpload key={`upload-${refreshTrigger}`} onUploadComplete={() => {
+                        refreshData(); setActiveTab('view');
+                    }} refModel={refModel} refId={refId} />
+                )}
+                {activeTab === 'delete' && (
+                    <ImageDelete key={`delete-${refreshTrigger}`}
+                        onDeleteComplete={() => { refreshData(); }} refModel={refModel} refId={refId} />
+                )}
+            </div>
+        </div>
     );
 };
 

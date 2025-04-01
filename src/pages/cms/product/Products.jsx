@@ -17,6 +17,8 @@ function Products() {
     const toggleModal = () => setIsModalOpen(!isModalOpen);
     const refModel = "Product"
 
+    console.log(products)
+
 
     useEffect(() => {
         const BASE_URL = import.meta.env.VITE_BASE_URL;
