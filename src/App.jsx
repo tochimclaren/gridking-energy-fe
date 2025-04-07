@@ -24,11 +24,20 @@ import Images from './pages/cms/Images';
 import Galleries from './pages/cms/gallery/Galleries';
 import UpdateGallery from './pages/cms/category/UpdateCategory';
 import DeleteGallery from './pages/cms/gallery/DeleteGallery';
+import Login from './pages/auth/Login';
+import Logout from './pages/auth/Logout';
+import CreateAccount from './pages/auth/CreateAccount';
+import Profile from './pages/auth/Profile';
+import Register from './pages/auth/Register';
+
 
 function App() {
   return (
 
-    <BrowserRouter>
+    <BrowserRouter future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}>
       <Routes>
         {/* main layout */}
         <Route element={<MainLayout />}>
@@ -36,6 +45,11 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/appliance" element={<MainAppliance />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/logout" element={<Logout />} />
+          <Route path="/create-account" element={<CreateAccount />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
         <Route element={<CmsLayout />}>
           <Route path="/cms/dashboard" element={<Dashboard />} />

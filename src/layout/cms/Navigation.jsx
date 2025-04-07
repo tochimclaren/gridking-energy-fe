@@ -20,11 +20,20 @@ function Navigation() {
         <Link to="/" className="font-bold text-white hover:text-gray-500 transition">
             Main
           </Link>
-          <Link to="/about" className="text-white hover:text-gray-300 transition">
-            About
+          <Link to="/login" className="text-white hover:text-gray-300 transition">
+            Login
           </Link>
-          <Link to="/contact" className="text-white hover:text-gray-300 transition">
-            Contact
+          <Link to="/logout" className="text-white hover:text-gray-300 transition">
+            Logout
+          </Link>
+          <Link to="/profile" className="text-white hover:text-gray-300 transition">
+            Profile
+          </Link>
+          <Link to="/register" className="text-white hover:text-gray-300 transition">
+            Register
+          </Link>
+          <Link to="/create-account" className="text-white hover:text-gray-300 transition">
+            Create Account
           </Link>
         </div>
       </div>

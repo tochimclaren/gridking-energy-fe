@@ -19,7 +19,15 @@ function Appliance() {
         setError(null);
         const response = await axios.get(`${BASE_URL}/appliance`)
         const { data } = response.data
-        setAppliances(data)
+        
+        // Set default values for quantity and wattage when loading data
+        const applancesWithDefaults = data.map(appliance => ({
+          ...appliance,
+          quantity: appliance.quantity || 1,
+          wattage: appliance.wattage || 0
+        }));
+        
+        setAppliances(applancesWithDefaults)
         setIsLoading(false);
       } catch (err) {
         if (axios.isCancel(err)) {
@@ -39,21 +47,30 @@ function Appliance() {
     let total = 0;
     appliances.forEach(appliance => {
       if (selectedAppliances[appliance._id]) {
-        total += appliance.wattage * appliance.quantity;
+        // Ensure values are numbers with defaults
+        const quantity = Number(appliance.quantity) || 1;
+        const wattage = Number(appliance.wattage) || 0;
+        total += wattage * quantity;
       }
     });
     setTotalWattage(total);
   }, [selectedAppliances, appliances]);
 
   const handleQuantityChange = (id, value) => {
+    // Ensure value is a number and at least 1
+    const numValue = Math.max(1, Number(value) || 1);
+    
     setAppliances(appliances.map(appliance =>
-      appliance._id === id ? { ...appliance, quantity: value } : appliance
+      appliance._id === id ? { ...appliance, quantity: numValue } : appliance
     ));
   };
 
   const handleWattageChange = (id, value) => {
+    // Ensure value is a number and at least 0
+    const numValue = Math.max(0, Number(value) || 0);
+    
     setAppliances(appliances.map(appliance =>
-      appliance._id === id ? { ...appliance, wattage: value } : appliance
+      appliance._id === id ? { ...appliance, wattage: numValue } : appliance
     ));
   };
 
@@ -66,17 +83,17 @@ function Appliance() {
 
   // Loading state
   if (isLoading) {
-    <Loader />
+    return <Loader />;
   }
 
   // Error state
   if (error) {
-    <ErrorMessage message={error} />
+    return <ErrorMessage message={error} />;
   }
 
   // Empty state
   if (!appliances || appliances.length === 0) {
-    <Empty />
+    return <Empty />;
   }
 
   // Content when everything is loaded successfully
@@ -86,55 +103,68 @@ function Appliance() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Column (2/3 width on medium screens and above) */}
-        <div className="md:col-span-2 space-y-4">
-          {appliances.map(appliance => (
-            <div key={appliance._id} className="flex items-center space-x-4 p-4 border rounded-lg">
-              {/* Checkbox style button */}
-              <button
-                onClick={() => toggleSelection(appliance._id)}
-                className={`w-6 h-6 flex items-center justify-center border-2 rounded 
-                  ${selectedAppliances[appliance._id]
-                    ? 'bg-blue-500 border-blue-600'
-                    : 'bg-white border-gray-300'}`}
-                aria-label={`Select ${appliance.name}`}
-              >
-                {selectedAppliances[appliance._id] &&
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                }
-              </button>
-
-              {/* Appliance name */}
-              <span className="font-medium">{appliance.name}</span>
-
-              {/* Quantity input */}
-              <div className="flex items-center">
-                <label htmlFor={`quantity-${appliance._id}`} className="mr-2 text-sm">Quantity:</label>
-                <input
-                  id={`quantity-${appliance._id}`}
-                  type="number"
-                  min="0"
-                  value={appliance.quantity}
-                  onChange={(e) => handleQuantityChange(appliance._id, parseInt(e.target.value))}
-                  className="w-16 p-1 border rounded"
-                />
-              </div>
-
-              {/* Wattage input */}
-              <div className="flex items-center">
-                <label htmlFor={`wattage-${appliance._id}`} className="mr-2 text-sm">Wattage:</label>
-                <input
-                  id={`wattage-${appliance._id}`}
-                  type="number"
-                  min="0"
-                  value={appliance.wattage}
-                  onChange={(e) => handleWattageChange(appliance._id, parseInt(e.target.value))}
-                  className="w-16 p-1 border rounded"
-                />
-              </div>
-            </div>
-          ))}
+        <div className="md:col-span-2 space-y-4" id="appliance-list">
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border rounded-lg">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Select</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wattage</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {appliances.map(appliance => (
+                  <tr key={appliance._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleSelection(appliance._id)}
+                        className={`w-6 h-6 flex items-center justify-center border-2 rounded 
+                          ${selectedAppliances[appliance._id]
+                            ? 'bg-blue-500 border-blue-600'
+                            : 'bg-white border-gray-300'}`}
+                        aria-label={`Select ${appliance.name}`}
+                      >
+                        {selectedAppliances[appliance._id] &&
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        }
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap font-medium">{appliance.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <label htmlFor={`quantity-${appliance._id}`} className="sr-only">Quantity:</label>
+                        <input
+                          id={`quantity-${appliance._id}`}
+                          type="number"
+                          min="1"
+                          value={appliance.quantity}
+                          onChange={(e) => handleQuantityChange(appliance._id, parseInt(e.target.value))}
+                          className="w-16 p-1 border rounded"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <label htmlFor={`wattage-${appliance._id}`} className="sr-only">Wattage:</label>
+                        <input
+                          id={`wattage-${appliance._id}`}
+                          type="number"
+                          min="0"
+                          value={appliance.wattage}
+                          onChange={(e) => handleWattageChange(appliance._id, parseInt(e.target.value))}
+                          className="w-16 p-1 border rounded"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Right Column (1/3 width on medium screens and above) */}
@@ -147,8 +177,8 @@ function Appliance() {
               <ul className="mt-2 space-y-2">
                 {appliances.filter(a => selectedAppliances[a._id]).map(appliance => (
                   <li key={`summary-${appliance._id}`} className="flex justify-between">
-                    <span>{appliance.name} (×{appliance.quantity})</span>
-                    <span>{appliance.wattage * appliance.quantity} watts</span>
+                    <span>{appliance.name} (×{appliance.quantity || 1})</span>
+                    <span>{(appliance.wattage || 0) * (appliance.quantity || 1)} watts</span>
                   </li>
                 ))}
               </ul>

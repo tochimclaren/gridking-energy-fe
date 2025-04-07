@@ -60,8 +60,8 @@ function Galleries() {
     return (
         <div className="p-4">
             <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
-            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
-                Add Categories
+            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 mb-4 rounded">
+                Add Gallery
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
                 <table className="w-full table-fixed divide-y divide-gray-200">

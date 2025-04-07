@@ -67,7 +67,7 @@ function Appliances() {
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4 text-center">Appliances</h2>
-      <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
+      <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded mb-4">
         Add appliance
       </button>
       <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
@@ -78,7 +78,7 @@ function Appliances() {
                 Name
               </th>
               <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Wattage
+                Sensitivity
               </th>
               <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
@@ -101,7 +101,7 @@ function Appliances() {
                   {appliance.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {appliance.wattage} W
+                  {String(appliance.isSensitive)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(appliance.createdAt)}

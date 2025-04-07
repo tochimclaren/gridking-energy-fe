@@ -16,18 +16,14 @@ function Products() {
     const endpoint = `${BASE_URL}/product`
     const toggleModal = () => setIsModalOpen(!isModalOpen);
     const refModel = "Product"
-
-    console.log(products)
-
-
+    
     useEffect(() => {
-        const BASE_URL = import.meta.env.VITE_BASE_URL;
         const getAppliance = async () => {
             try {
                 setIsLoading(true);
                 setError(null);
-                const response = await axios.get(`${BASE_URL}/product`)
-                const { products } = response.data
+                const response = await axios.get(endpoint)
+                const products = response.data.products
                 setProducts(products)
                 setIsLoading(false);
             } catch (err) {
@@ -43,54 +39,48 @@ function Products() {
         getAppliance()
     }, [])
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    };
     // Loading state
     if (isLoading) {
-        <Loader />
+        return <Loader />;
     }
+    
     // Error state
     if (error) {
-        <ErrorMessage message={error} />
+        return <ErrorMessage message={error} />;
     }
+    
     // Empty state
     if (!products || products.length === 0) {
-        <Empty />
+        return <Empty />;
     }
-
+    
     // Content when everything is loaded successfully
     return (
-        <div className="p-4">
+        <div className="p-4 w-full">
             <h2 className="text-xl font-bold mb-4 text-center">Products</h2>
-            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
+            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded mb-4 hover:bg-blue-600 transition-colors">
                 Add Product
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
-                <table className="w-full table-fixed divide-y divide-gray-200">
+                <table className="w-full table-auto divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/3">
                                 Name
                             </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Status
                             </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Category
                             </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
                                 Hot Sell
                             </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Images
                             </th>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Action
                             </th>
                         </tr>
@@ -110,19 +100,23 @@ function Products() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {product.category.name}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                                     {String(product.hotSell)}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <Link to="/cms/images" state={{ data: product, refModel }}>Images</Link>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                    <Link to="/cms/images" state={{ data: product, refModel }} className="text-blue-600 hover:text-blue-800 transition-colors duration-150">
+                                        View Images
+                                    </Link>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <Link to="/cms/products/edit" state={{ product }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
-                                        Edit
-                                    </Link>
-                                    <Link to="/cms/products/delete" state={{ product }} className="text-red-600 hover:text-red-900 transition-colors duration-150">
-                                        Delete
-                                    </Link>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
+                                    <div className="flex justify-center space-x-3">
+                                        <Link to="/cms/products/edit" state={{ product }} className="text-indigo-600 hover:text-indigo-900 transition-colors duration-150">
+                                            Edit
+                                        </Link>
+                                        <Link to="/cms/products/delete" state={{ product }} className="text-red-600 hover:text-red-900 transition-colors duration-150">
+                                            Delete
+                                        </Link>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -133,7 +127,7 @@ function Products() {
                 <ProductForm title={'Create Product'} endpoint={endpoint} />
                 <button
                     onClick={toggleModal}
-                    className="mt-4 bg-red-500 text-white py-2 px-4 rounded">
+                    className="mt-4 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded transition-colors">
                     Close
                 </button>
             </Modal>
@@ -141,4 +135,4 @@ function Products() {
     );
 }
 
-export default Products
+export default Products;

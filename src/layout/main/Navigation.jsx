@@ -21,12 +21,6 @@ function Navigation() {
         <Link to="/cms/dashboard" className="font-bold text-white hover:text-gray-500 transition">
             CMS
           </Link>
-          <Link to="/about" className="text-white hover:text-gray-300 transition">
-            About
-          </Link>
-          <Link to="/contact" className="text-white hover:text-gray-300 transition">
-            Contact
-          </Link>
         </div>
       </div>
     </nav>

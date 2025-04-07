@@ -4,7 +4,7 @@ import axios from 'axios';
 const ApplianceForm = ({ title, endpoint }) => {
     const [formData, setFormData] = useState({
         name: '',
-        wattage: ''
+        isSensitive: false
     });
     const [status, setStatus] = useState({
         message: '',
@@ -13,10 +13,10 @@ const ApplianceForm = ({ title, endpoint }) => {
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
-        const { id, value } = e.target;
+        const { id, value, type, checked } = e.target;
         setFormData(prevData => ({
             ...prevData,
-            [id]: value
+            [id]: type === 'checkbox' ? checked : value
         }));
     };
 
@@ -28,10 +28,10 @@ const ApplianceForm = ({ title, endpoint }) => {
         try {
             const response = await axios.post(endpoint, {
                 name: formData.name,
-                wattage: Number(formData.wattage)
+                isSensitive: formData.isSensitive
             });
 
-            console.log(response)
+            console.log(response);
 
             setStatus({
                 message: 'Appliance added successfully!',
@@ -39,7 +39,7 @@ const ApplianceForm = ({ title, endpoint }) => {
             });
 
             // Clear form after successful submission
-            setFormData({ name: '', wattage: '' });
+            setFormData({ name: '', isSensitive: false });
 
         } catch (error) {
             setStatus({
@@ -70,18 +70,17 @@ const ApplianceForm = ({ title, endpoint }) => {
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label htmlFor="wattage" className="block text-sm font-medium text-gray-700">
-                        Wattage (W)
-                    </label>
+                <div className="flex items-center space-x-2">
                     <input
-                        type="number"
-                        id="wattage"
-                        value={formData.wattage}
+                        type="checkbox"
+                        id="isSensitive"
+                        checked={formData.isSensitive}
                         onChange={handleChange}
-                        className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 focus:bg-sky-50 transition-colors"
-                        required
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
+                    <label htmlFor="isSensitive" className="text-sm font-medium text-gray-700">
+                        Sensitive Appliance
+                    </label>
                 </div>
 
                 <button

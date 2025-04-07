@@ -24,8 +24,6 @@ function Products() {
                 setError(null);
                 const response = await axios.get(`${BASE_URL}/category`)
                 const { data } = response.data
-
-                console.log(data)
                 setProducts(data)
                 setIsLoading(false);
             } catch (err) {
@@ -37,7 +35,6 @@ function Products() {
                 }
             }
         }
-
         getAppliance()
     }, [])
 
@@ -66,7 +63,7 @@ function Products() {
     return (
         <div className="p-4">
             <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
-            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded">
+            <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 mb-4 rounded">
                 Add Categories
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
@@ -109,7 +106,7 @@ function Products() {
                 </table>
             </div>
             <Modal isOpen={isModalOpen} onClose={toggleModal}>
-                <CategoryForm title={'Create Product'} endpoint={endpoint} />
+                <CategoryForm title={'Create Category'} endpoint={endpoint} />
                 <button
                     onClick={toggleModal}
                     className="mt-4 bg-red-500 text-white py-2 px-4 rounded">
