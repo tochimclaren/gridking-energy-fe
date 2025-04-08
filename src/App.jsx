@@ -27,7 +27,6 @@ import DeleteGallery from './pages/cms/gallery/DeleteGallery';
 import Login from './pages/auth/Login';
 import Logout from './pages/auth/Logout';
 import Profile from './pages/auth/Profile';
-import Register from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import Files from './pages/cms/Files';
 import Download from './pages/cms/Download';
@@ -50,7 +49,6 @@ function App() {
           <Route path="/appliance" element={<MainAppliance />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>

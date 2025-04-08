@@ -29,9 +29,6 @@ function Navigation() {
           <Link to="/profile" className="text-white hover:text-gray-300 transition">
             Profile
           </Link>
-          <Link to="/register" className="text-white hover:text-gray-300 transition">
-            Register
-          </Link>
           <Link to="/create-account" className="text-white hover:text-gray-300 transition">
             Create Account
           </Link>
