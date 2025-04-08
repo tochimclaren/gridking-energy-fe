@@ -58,16 +58,16 @@ function Galleries() {
 
     // Content when everything is loaded successfully
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
+        <div className="p-4 w-full">
+            <h2 className="text-xl font-bold mb-4 text-center">Galleries</h2>
             <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 mb-4 rounded">
                 Add Gallery
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
-                <table className="w-full table-fixed divide-y divide-gray-200">
+                <table className="w-full table-auto divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th scope="col" className="w-1/3 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Name
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -75,6 +75,9 @@ function Galleries() {
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Is Public
+                            </th>
+                            <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Images
                             </th>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Action
@@ -98,7 +101,7 @@ function Galleries() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     <Link to="/cms/images" state={{ data: gallery, refModel }}>Images</Link>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-cente">
                                     <Link to="/cms/galleries/edit" state={{ gallery }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                                         Edit
                                     </Link>

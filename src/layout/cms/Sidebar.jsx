@@ -11,6 +11,9 @@ function Sidebar() {
         { label: 'Categories', icon: '', path: '/cms/categories' },
         { label: 'Carousels', icon: '', path: '/cms/carousels' },
         { label: 'Galleries', icon: '', path: '/cms/galleries' },
+        { label: 'Downloads', icon: '', path: '/cms/downloads' },
+        { label: 'Customers', icon: '', path: '/cms/customers' },
+        { label: 'Users', icon: '', path: '/cms/users' },
         // { label: 'Settings', icon: '⚙️', path: '/settings' },
     ];
 

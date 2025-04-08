@@ -3,10 +3,10 @@ import axios from 'axios';
 
 // Product status enum (imported from your models)
 const Status = {
-  NewArrival: 'NewArrival',
-  InStock: 'InStock',
-  OutOfStock: 'OutOfStock',
-  Discontinued: 'Discontinued'
+  NEW_ARRIVAL: 'NEW_ARRIVAL',
+  IN_STOCK: 'IN_STOCK',
+  OUT_OF_STOCK: 'OUT_OF_STOCK',
+  FEATURED: 'FEATURED'
 };
 
 const ProductForm = ({ productId = null }) => {
@@ -22,7 +22,7 @@ const ProductForm = ({ productId = null }) => {
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
-    status: Status.NewArrival,
+    status: Status.NEW_ARRIVAL,
     category: '',
     hotSell: false,
     attributes: []
@@ -133,7 +133,7 @@ const ProductForm = ({ productId = null }) => {
         response = await axios.put(`${BASE_URL}/product/${productId}`, formData);
         setSuccessMessage('Product updated successfully!');
       } else {
-        response = await axios.post(`${BASE_URL}/product/`, formData);
+        response = await axios.post(`${BASE_URL}/product`, formData);
         setSuccessMessage('Product created successfully!');
 
         // Reset form if creating new product
@@ -141,7 +141,7 @@ const ProductForm = ({ productId = null }) => {
           setFormData({
             name: '',
             slug: '',
-            status: Status.NewArrival,
+            status: Status.NEW_ARRIVAL,
             category: '',
             hotSell: false,
             attributes: []
@@ -238,7 +238,7 @@ const ProductForm = ({ productId = null }) => {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 max-w-4xl mx-auto">
+    <div className="bg-white shadow-md rounded-lg p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-6">
         {isEditMode ? 'Edit Product' : 'Create New Product'}
       </h2>
@@ -256,116 +256,126 @@ const ProductForm = ({ productId = null }) => {
       )}
 
       <form onSubmit={handleSubmit}>
-        {/* Product Name */}
-        <div className="mb-4">
-          <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
-            Product Name*
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            onBlur={() => !formData.slug && generateSlug()}
-            className="w-full p-2 border rounded"
-            required
-            minLength={2}
-            maxLength={100}
-          />
-          <p className="text-sm text-gray-500 mt-1">2-100 characters</p>
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            {/* Left Column */}
+            
+            {/* Product Name */}
+            <div>
+              <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
+                Product Name*
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                onBlur={() => !formData.slug && generateSlug()}
+                className="w-full p-2 border rounded"
+                required
+                minLength={2}
+                maxLength={100}
+              />
+              <p className="text-sm text-gray-500 mt-1">2-100 characters</p>
+            </div>
 
-        {/* Product Slug */}
-        <div className="mb-4">
-          <label htmlFor="slug" className="block text-gray-700 font-medium mb-2">
-            Slug*
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              id="slug"
-              name="slug"
-              value={formData.slug}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-              required
-              pattern="^[a-z0-9-]+$"
-              minLength={2}
-              maxLength={100}
-            />
-            <button
-              type="button"
-              onClick={generateSlug}
-              className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
-            >
-              Generate
-            </button>
+            {/* Product Slug */}
+            <div>
+              <label htmlFor="slug" className="block text-gray-700 font-medium mb-2">
+                Slug*
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  required
+                  pattern="^[a-z0-9-]+$"
+                  minLength={2}
+                  maxLength={100}
+                />
+                <button
+                  type="button"
+                  onClick={generateSlug}
+                  className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 whitespace-nowrap"
+                >
+                  Generate
+                </button>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">Only lowercase letters, numbers, and hyphens</p>
+            </div>
+
+            {/* Status */}
+            <div>
+              <label htmlFor="status" className="block text-gray-700 font-medium mb-2">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              >
+                {Object.values(Status).map(status => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <p className="text-sm text-gray-500 mt-1">Only lowercase letters, numbers, and hyphens</p>
-        </div>
 
-        {/* Status */}
-        <div className="mb-4">
-          <label htmlFor="status" className="block text-gray-700 font-medium mb-2">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          >
-            {Object.values(Status).map(status => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="space-y-4">
+            {/* Right Column */}
+            
+            {/* Category */}
+            <div>
+              <label htmlFor="category" className="block text-gray-700 font-medium mb-2">
+                Category*
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              >
+                <option value="">Select a category</option>
+                {categories.map(category => (
+                  <option key={category._id} value={category._id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        {/* Category */}
-        <div className="mb-4">
-          <label htmlFor="category" className="block text-gray-700 font-medium mb-2">
-            Category*
-          </label>
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-            required
-          >
-            <option value="">Select a category</option>
-            {categories.map(category => (
-              <option key={category._id} value={category._id}>
-                {category.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Hot Sell */}
-        <div className="mb-6">
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="hotSell"
-              name="hotSell"
-              checked={formData.hotSell}
-              onChange={handleChange}
-              className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-            />
-            <label htmlFor="hotSell" className="ml-2 block text-gray-700">
-              Hot Selling Product
-            </label>
+            {/* Hot Sell */}
+            <div className="pt-6">
+              <div className="flex items-center h-full">
+                <input
+                  type="checkbox"
+                  id="hotSell"
+                  name="hotSell"
+                  checked={formData.hotSell}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                />
+                <label htmlFor="hotSell" className="ml-2 block text-gray-700">
+                  Hot Selling Product
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Attributes Section */}
-        <div className="mb-6 border-t pt-4">
+        {/* Attributes Section - Full Width */}
+        <div className="mt-8 border-t pt-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold">Product Attributes</h3>
             <button
@@ -436,7 +446,7 @@ const ProductForm = ({ productId = null }) => {
                     </div>
 
                     {/* Required Flag */}
-                    <div className="flex items-center">
+                    <div className="flex items-center mt-6">
                       <input
                         type="checkbox"
                         id={`required-${index}`}

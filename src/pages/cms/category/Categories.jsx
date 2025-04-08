@@ -61,13 +61,13 @@ function Products() {
 
     // Content when everything is loaded successfully
     return (
-        <div className="p-4">
+        <div className="p-4 w-full">
             <h2 className="text-xl font-bold mb-4 text-center">Categories</h2>
             <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 mb-4 rounded">
                 Add Categories
             </button>
             <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
-                <table className="w-full table-fixed divide-y divide-gray-200">
+                <table className="w-full table-auto divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
                             <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -92,7 +92,7 @@ function Products() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                     {category.slug}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <Link to="/cms/categories/edit" state={{ category }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                                         Edit
                                     </Link>

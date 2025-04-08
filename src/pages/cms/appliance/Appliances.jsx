@@ -19,6 +19,7 @@ function Appliances() {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
+
   useEffect(() => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const getAppliance = async () => {
@@ -65,28 +66,28 @@ function Appliances() {
 
   // Content when everything is loaded successfully
   return (
-    <div className="p-4">
+    <div className="p-4 w-full">
       <h2 className="text-xl font-bold mb-4 text-center">Appliances</h2>
       <button onClick={toggleModal} className="bg-blue-500 text-white py-2 px-4 rounded mb-4">
         Add appliance
       </button>
       <div className="w-full overflow-x-auto bg-white rounded-lg shadow">
-        <table className="w-full table-fixed divide-y divide-gray-200">
+        <table className="w-full table-auto divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Name
               </th>
-              <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Sensitivity
               </th>
-              <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Created At
               </th>
-              <th scope="col" className="w-1/6 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Updated At
               </th>
-              <th scope="col" className="w-1/6 px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -109,7 +110,7 @@ function Appliances() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(appliance.updatedAt)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">
                   <Link to="/cms/appliances/edit" state={{ appliance }} className="text-indigo-600 hover:text-indigo-900 mr-3 transition-colors duration-150">
                     Edit
                   </Link>

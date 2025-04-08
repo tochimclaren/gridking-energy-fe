@@ -10,6 +10,25 @@ function Appliance() {
   const [error, setError] = useState(null);
   const [selectedAppliances, setSelectedAppliances] = useState({});
   const [totalWattage, setTotalWattage] = useState(0);
+  const [selectedBatteryCapacity, setSelectedBatteryCapacity] = useState('');
+  const [backupTime, setBackupTime] = useState(null);
+  const [recommendedInverter, setRecommendedInverter] = useState(null);
+  
+  // Define available battery capacities in Ah with their labels
+  const batteryCapacities = [
+    { capacityAh: 7, label: "7" },
+    { capacityAh: 20, label: "20" },
+    { capacityAh: 50, label: "50" },
+    { capacityAh: 100, label: "100" },
+    { capacityAh: 150, label: "150" },
+    { capacityAh: 200, label: "200" },
+    { capacityAh: 250, label: "250" },
+    { capacityAh: 280, label: "280" },
+    { capacityAh: 300, label: "300" },
+  ];
+  
+  // Define available inverter ratings in VA
+  const inverterRatings = [600, 800, 1100, 1400, 1800, 2200, 3000, 5000];
 
   useEffect(() => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -54,7 +73,57 @@ function Appliance() {
       }
     });
     setTotalWattage(total);
+    
+    // Calculate recommended inverter based on total wattage
+    if (total > 0) {
+      // Add 25% buffer to the wattage for power factor and future expansion
+      const requiredVA = Math.ceil(total * 1.25);
+      
+      // Find the smallest inverter rating that can handle the load
+      const recommended = inverterRatings.find(rating => rating >= requiredVA) || 
+                        inverterRatings[inverterRatings.length - 1];
+      
+      setRecommendedInverter(recommended);
+    } else {
+      setRecommendedInverter(null);
+    }
+    
+    // Recalculate backup time when wattage changes
+    calculateBackupTime(selectedBatteryCapacity, total);
   }, [selectedAppliances, appliances]);
+
+  // Function to calculate backup time
+  const calculateBackupTime = (batteryCapacityValue, currentWattage) => {
+    if (currentWattage > 0 && batteryCapacityValue) {
+      // Find the battery object
+      const batteryObj = batteryCapacities.find(b => b.capacityAh.toString() === batteryCapacityValue);
+      
+      if (batteryObj) {
+        // Convert Ah to Wh (using 12V battery)
+        const batteryCapacityWh = batteryObj.capacityAh * 12;
+        
+        // Calculate backup time in hours (using 80% DoD - Depth of Discharge)
+        const backupTimeHours = (batteryCapacityWh * 0.8) / currentWattage;
+        
+        // Convert to hours and minutes
+        const hours = Math.floor(backupTimeHours);
+        const minutes = Math.floor((backupTimeHours - hours) * 60);
+        
+        setBackupTime({ hours, minutes });
+      } else {
+        setBackupTime(null);
+      }
+    } else {
+      setBackupTime(null);
+    }
+  };
+
+  // Handle battery capacity change
+  const handleBatteryCapacityChange = (e) => {
+    const value = e.target.value;
+    setSelectedBatteryCapacity(value);
+    calculateBackupTime(value, totalWattage);
+  };
 
   const handleQuantityChange = (id, value) => {
     // Ensure value is a number and at least 1
@@ -79,6 +148,14 @@ function Appliance() {
       ...prev,
       [id]: !prev[id]
     }));
+  };
+
+  // Handle keyboard events
+  const handleKeyDown = (e, handler) => {
+    if (e.key === 'Enter') {
+      // Trigger the calculation on Enter key
+      handler(e);
+    }
   };
 
   // Loading state
@@ -143,6 +220,7 @@ function Appliance() {
                           min="1"
                           value={appliance.quantity}
                           onChange={(e) => handleQuantityChange(appliance._id, parseInt(e.target.value))}
+                          onKeyDown={(e) => handleKeyDown(e, () => handleQuantityChange(appliance._id, parseInt(e.target.value)))}
                           className="w-16 p-1 border rounded"
                         />
                       </div>
@@ -156,6 +234,7 @@ function Appliance() {
                           min="0"
                           value={appliance.wattage}
                           onChange={(e) => handleWattageChange(appliance._id, parseInt(e.target.value))}
+                          onKeyDown={(e) => handleKeyDown(e, () => handleWattageChange(appliance._id, parseInt(e.target.value)))}
                           className="w-16 p-1 border rounded"
                         />
                       </div>
@@ -200,6 +279,56 @@ function Appliance() {
                 </div>
               )}
             </div>
+
+            {/* Inverter Recommendation Section */}
+            {totalWattage > 0 && recommendedInverter && (
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold mb-2">Recommended Inverter</h4>
+                <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                  <p className="text-blue-800">
+                    For a total load of {totalWattage} watts, we recommend a <strong>{recommendedInverter} VA</strong> inverter.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Battery Selection Section */}
+            {totalWattage > 0 && (
+              <div className="pt-4 border-t">
+                <h4 className="font-semibold mb-2">Battery Backup Calculation</h4>
+                
+                <div className="mb-3">
+                  <label htmlFor="battery-capacity" className="block text-sm font-medium text-gray-700 mb-1">
+                    Select Battery Capacity (Ah)
+                  </label>
+                  <select
+                    id="battery-capacity"
+                    value={selectedBatteryCapacity}
+                    onChange={handleBatteryCapacityChange}
+                    onKeyDown={(e) => handleKeyDown(e, handleBatteryCapacityChange)}
+                    className="w-full p-2 border rounded focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select capacity...</option>
+                    {batteryCapacities.map(battery => (
+                      <option key={`${battery.capacityAh}-${battery.label}`} value={battery.capacityAh}>
+                        {battery.capacityAh} Ah ({battery.label} Wh)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {backupTime && (
+                  <div className="bg-green-50 border border-green-200 rounded p-3">
+                    <p className="text-green-800">
+                      With a {selectedBatteryCapacity} Ah battery,
+                      your estimated backup time is: <strong>
+                        {backupTime.hours} hour{backupTime.hours !== 1 ? 's' : ''} and {backupTime.minutes} minute{backupTime.minutes !== 1 ? 's' : ''}
+                      </strong>
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

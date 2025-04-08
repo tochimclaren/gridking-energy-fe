@@ -13,8 +13,8 @@ function Products() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const endpoint = `${BASE_URL}/product`
     const toggleModal = () => setIsModalOpen(!isModalOpen);
+    const endpoint = `${BASE_URL}/product`
     const refModel = "Product"
     
     useEffect(() => {
@@ -74,11 +74,14 @@ function Products() {
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Category
                             </th>
-                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Hot Sell
                             </th>
                             <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Images
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
+                                Files
                             </th>
                             <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6">
                                 Action
@@ -106,6 +109,11 @@ function Products() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     <Link to="/cms/images" state={{ data: product, refModel }} className="text-blue-600 hover:text-blue-800 transition-colors duration-150">
                                         View Images
+                                    </Link>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                    <Link to="/cms/files" state={{ data: product, refModel }} className="text-blue-600 hover:text-blue-800 transition-colors duration-150">
+                                        View Files
                                     </Link>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-center">

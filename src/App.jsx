@@ -26,10 +26,13 @@ import UpdateGallery from './pages/cms/category/UpdateCategory';
 import DeleteGallery from './pages/cms/gallery/DeleteGallery';
 import Login from './pages/auth/Login';
 import Logout from './pages/auth/Logout';
-import CreateAccount from './pages/auth/CreateAccount';
 import Profile from './pages/auth/Profile';
 import Register from './pages/auth/Register';
-
+import ForgotPassword from './pages/auth/ForgotPassword';
+import Files from './pages/cms/Files';
+import Download from './pages/cms/Download';
+import Users from './pages/cms/user/Users';
+import Customers from './pages/cms/customer/Customers';
 
 function App() {
   return (
@@ -47,9 +50,9 @@ function App() {
           <Route path="/appliance" element={<MainAppliance />} />
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
-          <Route path="/create-account" element={<CreateAccount />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Route>
         <Route element={<CmsLayout />}>
           <Route path="/cms/dashboard" element={<Dashboard />} />
@@ -75,6 +78,13 @@ function App() {
           <Route path="/cms/galleries" element={<Galleries />} />
           <Route path="/cms/galleries/edit" element={<UpdateGallery />} />
           <Route path="/cms/galleries/delete" element={<DeleteGallery />} />
+          {/* Files route */}
+          <Route path="/cms/files" element={<Files />} />
+          <Route path="/cms/downloads" element={<Download/>} />
+          {/* Users route */}
+          <Route path="/cms/users" element={<Users />} />
+          {/* Customers route */}
+          <Route path="/cms/customers" element={<Customers />} /> 
         </Route>
       </Routes>
     </BrowserRouter>
