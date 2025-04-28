@@ -1,0 +1,25 @@
+import { toast } from 'react-toastify';
+import QuoteForm from '../../../components/cms/quote/QuoteForm'
+
+const QuoteCreate = () => {
+
+
+  const handleSuccess = () => {
+    toast.success('Success!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+  return (
+    <div className="w-full">
+      <QuoteForm onSuccess={handleSuccess} />
+    </div>
+  )
+}
+
+export default QuoteCreate
