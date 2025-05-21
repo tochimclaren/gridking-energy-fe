@@ -35,7 +35,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselId, onSuccess }) =>
       title: '',
       description: '',
       buttonText: '',
-      background: true,
+      background: false,
       order: 0,
       active: true
     }
@@ -203,7 +203,7 @@ const CarouselForm: React.FC<CarouselFormProps> = ({ carouselId, onSuccess }) =>
                   disabled={isLoading}
                 />
                 <label htmlFor="background" className="ml-2 block text-sm text-gray-700">
-                  Show Background
+                  As Header Background
                 </label>
               </div>
 
