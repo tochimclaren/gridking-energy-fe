@@ -14,7 +14,9 @@ const ProductCreate = () => {
     });
   };
   return (
-    <ProductForm onSuccess={handleSuccess}/>
+    <div className="h-full w-full overflow-y-auto">
+      <ProductForm onSuccess={handleSuccess} />
+    </div>
   )
 }
 

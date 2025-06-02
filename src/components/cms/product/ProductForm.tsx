@@ -3,6 +3,7 @@ import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, ChevronRight, Plus, Trash2, Check, X } from 'lucide-react';
+import { commonAttributeNames } from '../../../utils/constants';
 
 enum Status {
   NewArrival = 'NEW_ARRIVAL',
@@ -39,8 +40,8 @@ interface CategoryInProduct {
 
 interface IProduct {
   _id?: string;
-  id:string;
-  images?:string[]
+  id: string;
+  images?: string[]
   name: string;
   slug: string;
   status: Status;
@@ -69,6 +70,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
   const [error, setError] = useState<string | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+
 
   const {
     control,
@@ -113,8 +116,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
     if (initialData) {
       const formData = {
         ...initialData,
-        category: typeof initialData.category === 'object' 
-          ? initialData.category._id 
+        category: typeof initialData.category === 'object'
+          ? initialData.category._id
           : initialData.category,
         attributes: initialData.attributes || []
       };
@@ -150,6 +153,21 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
     }));
   };
 
+  const handleAttributeNameSelect = (index: number, selectedValue: string) => {
+    if (selectedValue) {
+      const selectedAttribute = commonAttributeNames.find((attr: { value: string; }) => attr.value === selectedValue);
+      setValue(`attributes.${index}.name`, selectedValue);
+
+      // Auto-set the data type based on the selected attribute
+      if (selectedAttribute) {
+        setValue(`attributes.${index}.dataType`, selectedAttribute.dataType as 'string' | 'number' | 'boolean' | 'date');
+
+        // Clear the value when changing data type to avoid conflicts
+        setValue(`attributes.${index}.value`, '');
+      }
+    }
+  };
+
   const onSubmit = async (data: IProduct) => {
     setLoading(true);
     setError(null);
@@ -183,18 +201,18 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
       const isSelected = watch('category') === category._id;
       const hasChildren = category.children.length > 0;
       const isExpanded = expandedCategories[category._id];
-      
+
       return (
         <React.Fragment key={category._id}>
-          <div 
+          <div
             className={`flex items-center py-2 px-4 ${level > 0 ? 'pl-8' : ''} 
               hover:bg-gray-50 cursor-pointer rounded-md transition-colors
               ${isSelected ? 'bg-blue-50 border border-blue-200' : ''}`}
             onClick={() => setValue('category', category._id)}
           >
             {hasChildren && (
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className="mr-2 text-gray-500 hover:text-gray-700 transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -382,7 +400,24 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
             <div className="space-y-4">
               {fields.map((field, index) => (
                 <div key={field.id} className="grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="lg:col-span-4 space-y-1">
+                  {/* Quick Select for Attribute Name */}
+                  <div className="lg:col-span-2 space-y-1">
+                    <label className="block text-xs font-medium text-gray-700 uppercase tracking-wider">Quick Select</label>
+                    <select
+                      className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 bg-white"
+                      onChange={(e) => handleAttributeNameSelect(index, e.target.value)}
+                      defaultValue=""
+                    >
+                      {commonAttributeNames.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Attribute Name Input */}
+                  <div className="lg:col-span-3 space-y-1">
                     <label className="block text-xs font-medium text-gray-700 uppercase tracking-wider">Name*</label>
                     <input
                       {...register(`attributes.${index}.name`, { required: true })}
@@ -391,6 +426,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
                     />
                   </div>
 
+                  {/* Data Type Select */}
                   <div className="lg:col-span-2 space-y-1">
                     <label className="block text-xs font-medium text-gray-700 uppercase tracking-wider">Type*</label>
                     <select
@@ -404,7 +440,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
                     </select>
                   </div>
 
-                  <div className="lg:col-span-4 space-y-1">
+                  {/* Attribute Value Input */}
+                  <div className="lg:col-span-3 space-y-1">
                     <label className="block text-xs font-medium text-gray-700 uppercase tracking-wider">Value*</label>
                     <Controller
                       name={`attributes.${index}.value`}
@@ -415,9 +452,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
                           <input
                             {...field}
                             type={getInputType(type)}
-                            className={`block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 ${
-                              type === 'boolean' ? 'w-5 h-5 mt-2' : ''
-                            }`}
+                            className={`block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 ${type === 'boolean' ? 'w-5 h-5 mt-2' : ''
+                              }`}
                             checked={type === 'boolean' ? field.value === 'true' : undefined}
                             onChange={(e) => {
                               if (type === 'boolean') {
@@ -432,8 +468,9 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
                     />
                   </div>
 
+                  {/* Required Checkbox and Delete Button */}
                   <div className="lg:col-span-2 flex items-end space-x-4">
-                    <div className="flex items-center h-full">
+                    <div className="flex items-center">
                       <input
                         type="checkbox"
                         {...register(`attributes.${index}.required`)}

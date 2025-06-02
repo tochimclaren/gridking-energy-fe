@@ -29,6 +29,9 @@ const Categories: React.FC = () => {
         setSelectedCategory(category);
         setShowDeleteModal(true);
     };
+    const handleImageView = (data: Category) => {
+        navigate(`/cms/images`, { state: { refId: data._id, refModel: 'Category', data: data } })
+    }
 
     const confirmDelete = async (category: Category) => {
         try {
@@ -67,6 +70,7 @@ const Categories: React.FC = () => {
                     onEdit={handleEditCategory}
                     onDelete={handleDeleteCategory}
                     onView={handleViewCategory}
+                    onImageView={handleImageView}
                     onAddSubcategory={handleAddSubcategory}
                 />
             </div>

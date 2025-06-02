@@ -81,7 +81,7 @@ function Products() {
     };
 
     const handleImageView = (data: Product) => {
-        navigate(`/cms/images`, { state: { refId: data._id, refModel: 'Product' } })
+        navigate(`/cms/images`, { state: { refId: data._id, refModel: 'Product', data: data } })
     }
 
     const onPageChange = async (page: number) => {

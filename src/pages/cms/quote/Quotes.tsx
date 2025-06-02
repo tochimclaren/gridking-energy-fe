@@ -105,11 +105,11 @@ const Quotes = () => {
             <Table
                 title="Quotes"
                 headers={[
-                    { key: 'firstName', label: 'First Name', sortable: true },
-                    { key: 'lastName', label: 'Last Name', sortable: true },
-                    { key: 'email', label: 'Email', sortable: true },
-                    { key: 'phone', label: 'Phone', sortable: true },
-                    { key: 'state', label: 'State', sortable: true },
+                    { key: 'fullName', label: 'Full Name', sortable: true },
+                    { key: 'companyName', label: 'Company Name', sortable: true },
+                    { key: 'townCity', label: 'Town/City', sortable: true },
+                    { key: 'email', label: 'Email Address', sortable: true },
+                    { key: 'phoneNumber', label: 'Phone Number', sortable: true },
                 ]}
                 data={quotes}
                 keyField="_id"

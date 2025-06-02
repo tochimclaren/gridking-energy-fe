@@ -13,6 +13,7 @@ interface CategoryListProps {
   onEdit?: (category: Category) => void;
   onDelete?: (category: Category) => void;
   onView?:(category:Category)=>void;
+  onImageView?: (data: Category) => void;
   onAddSubcategory?: (parentCategory: Category) => void;
 }
 
@@ -23,6 +24,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
   onEdit,
   onDelete,
   onAddSubcategory,
+  onImageView,
   onView,
 }) => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -78,6 +80,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
             onEdit={onEdit}
             onDelete={onDelete}
             onView={onView}
+            onImageView={onImageView}
             onAddSubcategory={onAddSubcategory}
           />
         ))

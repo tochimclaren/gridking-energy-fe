@@ -127,8 +127,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preview
               </label>
-              <div className="w-full max-h-48 overflow-hidden rounded-md border border-gray-200">
-                <img src={preview} alt="Preview" className="w-full h-auto object-contain" />
+              <div className="w-full h-64 flex items-center justify-center rounded-md border border-gray-200 bg-gray-50">
+                <img 
+                  src={preview} 
+                  alt="Preview" 
+                  className="max-w-full max-h-full object-contain rounded-md" 
+                />
               </div>
             </div>
           )}

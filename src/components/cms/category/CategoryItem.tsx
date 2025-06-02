@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, Edit, Eye, Folder, FolderOpen, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Edit, Eye, Folder, FolderOpen, Image, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 
@@ -8,6 +8,7 @@ const CategoryItem: React.FC<{
     onEdit?: (category: Category) => void,
     onDelete?: (category: Category) => void,
     onView?: (category: Category) => void
+    onImageView?: (data: Category) => void,
     onAddSubcategory?: (parentCategory: Category) => void
 }> = ({
     category,
@@ -15,6 +16,7 @@ const CategoryItem: React.FC<{
     onEdit,
     onDelete,
     onView,
+    onImageView,
     onAddSubcategory
 }) => {
         const [isOpen, setIsOpen] = useState(false);
@@ -87,6 +89,18 @@ const CategoryItem: React.FC<{
                                     title="View category"
                                 >
                                     <Eye size={16} />
+                                </button>
+                            )}
+                            {onImageView && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onImageView(category);
+                                    }}
+                                    className="text-purple-600 hover:text-purple-800"
+                                    title="View category"
+                                >
+                                    <Image size={16} />
                                 </button>
                             )}
                             {onDelete && (

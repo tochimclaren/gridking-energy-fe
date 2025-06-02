@@ -2,10 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
+interface FormData {
+  fullName: string;
+  companyName: string;
+  apartment: string;
+  townCity: string;
+  phoneNumber: string;
+  email: string;
+}
 
 interface QuoteFormProps {
   quoteId?: string; // Optional - if provided, form is in edit mode
-  initialData?: Quote; // Optional - if provided, prefile the form with data rather fetching from server
+  initialData?: FormData; // Optional - if provided, prefill the form with data rather fetching from server
   onSuccess?: () => void; // Optional callback after successful submission
 }
 
@@ -13,7 +21,6 @@ const CarouselForm: React.FC<QuoteFormProps> = ({ quoteId, initialData, onSucces
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
 
   const isEditMode = Boolean(quoteId);
 
@@ -23,43 +30,42 @@ const CarouselForm: React.FC<QuoteFormProps> = ({ quoteId, initialData, onSucces
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<Quote>({
+  } = useForm<FormData>({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      country: '',
-      state: '',
-      content: ''
+      fullName: '',
+      companyName: '',
+      apartment: '',
+      townCity: '',
+      phoneNumber: '',
+      email: ''
     }
   });
 
-  // If in edit mode, fetch category data
+  // If in edit mode, fetch data
   useEffect(() => {
     if (quoteId) {
-      const fetchCarousel = async () => {
+      const fetchData = async () => {
         try {
           setIsLoading(true);
           const response = await axios.get(`${BASE_URL}/quote/${quoteId}`);
-          const { data } = response.data
-          const { firstName, lastName, email, phone, country, state, content } = data;
+          const { data } = response.data;
+          const { fullName, companyName, apartment, townCity, phoneNumber, email } = data;
           // Populate form with data
-          reset({ firstName, lastName, email, phone, country, state, content });
+          reset({ fullName, companyName, apartment, townCity, phoneNumber, email });
         } catch (err) {
-          console.error('Error fetching carousel:', err);
-          setError('Failed to load carousel data');
+          console.error('Error fetching data:', err);
+          setError('Failed to load data');
         } finally {
           setIsLoading(false);
         }
       };
 
-      fetchCarousel();
+      fetchData();
     }
   }, [quoteId, reset]);
 
   // Form submission handler
-  const onSubmit = async (data: Quote) => {
+  const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -74,14 +80,12 @@ const CarouselForm: React.FC<QuoteFormProps> = ({ quoteId, initialData, onSucces
         onSuccess();
       }
     } catch (err: any) {
-      console.error('Error saving Quote:', err);
-      setError(err.response?.data?.message || 'Failed to save Quote');
+      console.error('Error saving data:', err);
+      setError(err.response?.data?.message || 'Failed to save data');
     } finally {
       setIsLoading(false);
     }
   };
-
-
 
   return (
     <div className="w-full bg-white border-gray-200 p-5">
@@ -98,157 +102,136 @@ const CarouselForm: React.FC<QuoteFormProps> = ({ quoteId, initialData, onSucces
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          {/* FirstName Field */}
+          {/* Full Name Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-              First Name <span className="text-red-500">*</span>
+            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name <span className="text-red-500">*</span>
             </label>
             <input
-              id="firstName"
+              id="fullName"
               type="text"
-              {...register('firstName', {
-                required: 'First Name name is required',
-                minLength: { value: 2, message: 'First Name must be at least 2 characters' },
-                maxLength: { value: 100, message: 'First Name cannot exceed 100 characters' }
+              {...register('fullName', {
+                required: 'Full name is required',
+                minLength: { value: 2, message: 'Full name must be at least 2 characters' },
+                maxLength: { value: 100, message: 'Full name cannot exceed 100 characters' }
               })}
-              className={`block w-full rounded-lg border ${errors.firstName ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your First Name"
+              className={`block w-full rounded-lg border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your full name"
               disabled={isLoading}
             />
-            {errors.firstName && (
-              <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+            {errors.fullName && (
+              <p className="mt-1 text-sm text-red-600">{errors.fullName.message}</p>
             )}
           </div>
+
+          {/* Company Name Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-              Last Name <span className="text-red-500">*</span>
+            <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+              Company Name
             </label>
             <input
-              id="lastName"
+              id="companyName"
               type="text"
-              {...register('lastName', {
-                required: 'Last Name name is required',
-                minLength: { value: 2, message: 'Last Name must be at least 2 characters' },
-                maxLength: { value: 100, message: 'Last Name cannot exceed 100 characters' }
+              {...register('companyName', {
+                maxLength: { value: 100, message: 'Company name cannot exceed 100 characters' }
               })}
-              className={`block w-full rounded-lg border ${errors.lastName ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Last Name"
+              className={`block w-full rounded-lg border ${errors.companyName ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter company name (optional)"
               disabled={isLoading}
             />
-            {errors.lastName && (
-              <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+            {errors.companyName && (
+              <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
             )}
           </div>
+
+          {/* Email Address Field */}
           <div className="col-span-1 w-full">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email <span className="text-red-500">*</span>
+              Email Address <span className="text-red-500">*</span>
             </label>
             <input
               id="email"
               type="email"
               {...register('email', {
-                required: 'Email is required',
+                required: 'Email address is required',
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                   message: 'Invalid email address'
                 }
               })}
               className={`block w-full rounded-lg border ${errors.email ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Email"
+              placeholder="Enter your email address"
               disabled={isLoading}
             />
             {errors.email && (
               <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
             )}
           </div>
-          {/* Phone Field */}
+
+          {/* Phone Number Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone <span className="text-red-500">*</span>
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+              Phone Number <span className="text-red-500">*</span>
             </label>
             <input
-              id="phone"
-              type="text"
-              {...register('phone', {
-                required: 'First Name name is required',
-                minLength: { value: 2, message: 'Phone must be at least 2 characters' },
-                maxLength: { value: 16, message: 'Phone cannot exceed 16 characters' }
+              id="phoneNumber"
+              type="tel"
+              {...register('phoneNumber', {
+                required: 'Phone number is required',
+                minLength: { value: 10, message: 'Phone number must be at least 10 characters' },
+                maxLength: { value: 16, message: 'Phone number cannot exceed 16 characters' }
               })}
-              className={`block w-full rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Phone Number"
+              className={`block w-full rounded-lg border ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your phone number"
               disabled={isLoading}
             />
-            {errors.phone && (
-              <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
-            )}
-          </div>
-          {/* Country Field */}
-          <div className="col-span-1 w-full">
-            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-              Country <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="country"
-              type="text"
-              {...register('country', {
-                required: 'Country is required',
-                minLength: { value: 4, message: 'Country must be at least 4 characters' },
-                maxLength: { value: 50, message: 'Country cannot exceed 50 characters' }
-              })}
-              className={`block w-full rounded-lg border ${errors.country ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Country"
-              disabled={isLoading}
-            />
-            {errors.country && (
-              <p className="mt-1 text-sm text-red-600">{errors.country.message}</p>
-            )}
-          </div>
-          {/* State Field */}
-          <div className="col-span-1 w-full">
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-              State <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="state"
-              type="text"
-              {...register('state', {
-                required: 'State is required',
-                minLength: { value: 4, message: 'State must be at least 4 characters' },
-                maxLength: { value: 50, message: 'State cannot exceed 50 characters' }
-              })}
-              className={`block w-full rounded-lg border ${errors.state ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your State"
-              disabled={isLoading}
-            />
-            {errors.state && (
-              <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+            {errors.phoneNumber && (
+              <p className="mt-1 text-sm text-red-600">{errors.phoneNumber.message}</p>
             )}
           </div>
 
-          {/* Content Field */}
-          <div className="col-span-1 md:col-span-2 w-full">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-              Content
+          {/* Apartment Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="apartment" className="block text-sm font-medium text-gray-700 mb-1">
+              Apartment/Unit
             </label>
-            <textarea
-              id="content"
-              {...register('content', {
-                maxLength: { value: 500, message: 'Content cannot exceed 500 characters' }
+            <input
+              id="apartment"
+              type="text"
+              {...register('apartment', {
+                maxLength: { value: 50, message: 'Apartment/Unit cannot exceed 50 characters' }
               })}
-              rows={4}
-              className={`block w-full rounded-lg border ${errors.content ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter content here"
+              className={`block w-full rounded-lg border ${errors.apartment ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter apartment/unit number (optional)"
               disabled={isLoading}
             />
-            {errors.content && (
-              <p className="mt-1 text-sm text-red-600">{errors.content.message}</p>
+            {errors.apartment && (
+              <p className="mt-1 text-sm text-red-600">{errors.apartment.message}</p>
             )}
-            <p className="mt-1 text-xs text-gray-500">
-              Max 500 characters
-            </p>
+          </div>
+
+          {/* Town/City Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="townCity" className="block text-sm font-medium text-gray-700 mb-1">
+              Town/City <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="townCity"
+              type="text"
+              {...register('townCity', {
+                required: 'Town/City is required',
+                minLength: { value: 2, message: 'Town/City must be at least 2 characters' },
+                maxLength: { value: 50, message: 'Town/City cannot exceed 50 characters' }
+              })}
+              className={`block w-full rounded-lg border ${errors.townCity ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your town or city"
+              disabled={isLoading}
+            />
+            {errors.townCity && (
+              <p className="mt-1 text-sm text-red-600">{errors.townCity.message}</p>
+            )}
           </div>
         </div>
-
 
         {/* Form Actions */}
         <div className="mt-6 flex justify-end space-x-3 w-full">
@@ -274,9 +257,9 @@ const CarouselForm: React.FC<QuoteFormProps> = ({ quoteId, initialData, onSucces
                 Processing...
               </span>
             ) : isEditMode ? (
-              'Update Category'
+              'Update Quote'
             ) : (
-              'Create Category'
+              'Create Quote'
             )}
           </button>
         </div>
