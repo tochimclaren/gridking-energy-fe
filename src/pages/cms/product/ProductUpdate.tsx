@@ -3,7 +3,9 @@ import ProductForm from "../../../components/cms/product/ProductForm"
 
 const ProductUpdate = () => {
   const location = useLocation();
-  const product = location.state?.data;
+  const product = location.state?.product;
+
+  console.log(product);
 
   return (
     <div className="h-full w-full overflow-y-auto">

@@ -4,7 +4,7 @@ import {
     BookImage, CircuitBoard, Download, FolderTree,
     GalleryHorizontal, Images, MessageSquareQuote,
     PackageSearch, ScrollText, ChevronLeft, ChevronRight,
-    Menu, User2
+    Menu, User2, Mail
 } from 'lucide-react';
 
 
@@ -24,6 +24,7 @@ function Sidebar() {
         { label: 'Images', icon: <Images size={20} />, path: '/cms/images' },
         { label: 'Downloads', icon: <Download size={20} />, path: '/cms/downloads' },
         { label: 'Users', icon: <User2 size={20} />, path: '/cms/users' },
+        { label: 'Newsletters', icon: <Mail size={20} />, path: '/cms/newsletters' },
     ];
 
     const toggleSidebar = () => {
@@ -127,7 +128,7 @@ function Sidebar() {
             {/* Overlay for mobile (only visible when mobile menu is open) */}
             {isMobileMenuOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+                    className="fixed inset-0 bg-opacity-50 z-30 lg:hidden"
                     onClick={toggleMobileMenu}
                 />
             )}

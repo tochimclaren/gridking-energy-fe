@@ -8,11 +8,11 @@ const Images = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const location = useLocation()
   const { refId = '', refModel = '' } = location.state || {}
-  const {name} = location.state?.product || "Upload Image"
+  const { name } = location.state?.product || "Upload Image"
 
-  
 
-const handleSuccess = () => {
+
+  const handleSuccess = () => {
     toast.success('Success!', {
       position: "top-right",
       autoClose: 5000,
@@ -26,7 +26,7 @@ const handleSuccess = () => {
 
   const handleError = (error: any) => {
     const errorMessage = error?.response?.data?.message || error?.message || 'Upload failed. Please try again.';
-    
+
     toast.error(errorMessage, {
       position: "top-right",
       autoClose: 5000,
@@ -42,13 +42,13 @@ const handleSuccess = () => {
     <div className="w-full">
       {refId && refModel !== null || undefined ?
         <div className="w-full">
-          <h3 className="text-center text-gray-600 font-bold">Upload Image for: {name}</h3>
-          <ImageUploader 
-            refId={refId} 
-            refModel={refModel} 
+          <h3 className="text-center text-gray-600 font-bold">{`${name ? name : ''}`}</h3>
+          <ImageUploader
+            refId={refId}
+            refModel={refModel}
             onSuccess={handleSuccess}
             onError={handleError}
-            apiUrl={`${BASE_URL}/image/upload`}/>
+            apiUrl={`${BASE_URL}/image/upload`} />
           <ImageGallery apiUrl={`${BASE_URL}/image`} refId={refId} refModel={refModel} />
         </div>
         :

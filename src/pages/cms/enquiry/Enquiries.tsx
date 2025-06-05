@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Table from '../../../components/tables/Table';
 import axios from 'axios';
+import Table from '../../../components/tables/Table';
 import DeleteModal from '../../../components/utils/DeleteModal';
 import CreateButton from '../../../components/utils/CreateButton';
 
@@ -33,8 +33,6 @@ const Enquiries = () => {
                 }
             });
             const { data, pagination: pageMeta } = response.data;
-            console.log(response)
-
             setEnquiries(data);
             setPagination({
                 page: pageMeta.page,
@@ -67,7 +65,7 @@ const Enquiries = () => {
 
     const confirmDelete = async (enquiry: Enquiry) => {
         try {
-            await axios.delete(`${BASE_URL}/product/${enquiry._id}`);
+            await axios.delete(`${BASE_URL}/enquiry/${enquiry._id}`);
             setEnquiries(enquiries.filter(p => p._id !== enquiry._id));
             setShowDeleteModal(false);
             setSelectedEnquiry(null);
@@ -111,8 +109,7 @@ const Enquiries = () => {
                 { key: 'name', label: 'Name', sortable: true },
                 { key: 'email', label: 'Email', sortable: true },
                 { key: 'phone', label: 'Phone', sortable: false },
-                { key: 'country', label: 'Country', sortable: false },
-                { key: 'state', label: 'State', sortable: false },
+                { key: 'interest', label: 'Interest', sortable: false },
                 { key: 'createdAt', label: 'Created', sortable: true },
                 { 
                     key: 'status', 

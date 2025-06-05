@@ -1,37 +1,34 @@
 import { useState, useEffect } from 'react';
 import Table from '../../../components/tables/Table';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import DeleteModal from '../../../components/utils/DeleteModal';
-import CreateButton from '../../../components/utils/CreateButton';
 
-function Products() {
+function Newsletters() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [products, setProducts] = useState<Product[]>([]);
+    const [newsletters, setNewsletters] = useState<Newsletter[]>([]);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [selectedNewsletter, setSelectedNewsletter] = useState<Newsletter | null>(null);
     const [pagination, setPagination] = useState({
         page: 1,
         limit: 10,
         total: 0
     });
 
-    const navigate = useNavigate();
     const fetchData = async (page: number, limit: number) => {
         try {
             setLoading(true);
-            const response = await axios.get(`${BASE_URL}/product`, {
+            const response = await axios.get(`${BASE_URL}/newsletter`, {
                 params: {
                     page,
                     limit
                 }
             });
             const { data, pagination: pageMeta } = response.data;
-            console.log("Fetched products:", data); // Debugging line to check fetched data
+            console.log("Fetched newsletters:", data); // Debugging line to check fetched data
 
-            setProducts(data);
+            setNewsletters(data);
             setPagination({
                 page: pageMeta.currentPage,
                 limit: pageMeta.limit,
@@ -51,39 +48,22 @@ function Products() {
 
 
 
-    const handleUpdate = (product: Product) => {
-        navigate(`/cms/products/${product._id}/update`, {
-            state: { product }
-        });
-    };
-
-    const handleDelete = (product: Product) => {
-        setSelectedProduct(product);
+    const handleDelete = (product: Newsletter) => {
+        setSelectedNewsletter(product);
         setShowDeleteModal(true);
     };
 
-    const confirmDelete = async (product: Product) => {
+    const confirmDelete = async (newsletter: Newsletter) => {
         try {
-            await axios.delete(`${BASE_URL}/product/${product._id}`);
-            setProducts(products.filter(p => p._id !== product._id));
+            await axios.delete(`${BASE_URL}/newsletter/${newsletter.email}`);
+            setNewsletters(newsletters.filter(n => n._id !== newsletter.email));
             setShowDeleteModal(false);
-            setSelectedProduct(null);
+            setSelectedNewsletter(null);
         } catch (err) {
             console.error('Error deleting product:', err);
             alert('Failed to delete product. Please try again.');
         }
     };
-
-    const handleView = (product: Product) => {
-        console.log("Product data:", product);
-        navigate(`/cms/products/${product._id}/detail`, {
-            state: { product } // Passing product data via state
-        });
-    };
-
-    const handleImageView = (data: Product) => {
-        navigate(`/cms/images`, { state: { refId: data._id, refModel: 'Product', data: data } })
-    }
 
     const onPageChange = async (page: number) => {
         setPagination(prev => ({
@@ -111,39 +91,18 @@ function Products() {
     return (
         <div className="w-full max-w-full overflow-x-auto">
             <Table
-                title="Products"
+                title="Subscribed Newsletter Email List"
                 headers={[
-                    { key: 'name', label: 'Name', sortable: true },
-                    { key: 'slug', label: 'Slug', sortable: true },
-                    {
-                        key: 'category',
-                        label: 'Category',
-                        sortable: true,
-                        render: (value, row) => value && value.name ? value.name : 'N/A'
-                    },
-                    {
-                        key: 'status',
-                        label: 'Status',
-                        sortable: true,
-                        render: (value) => (
-                            <span className={`px-2 py-1 rounded-full text-xs ${value === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                                }`}>
-                                {value}
-                            </span>
-                        )
-                    }
+                    { key: 'email', label: 'Email', sortable: true },
+                    { key: 'subscribedAt', label: 'Subscribed At', sortable: true },
                 ]}
-                data={products}
+                data={newsletters}
                 keyField="_id"
                 selectable
-                createBtn={<CreateButton link='/cms/products/create' />}
                 onRowSelect={(selected) => console.log('Selected rows:', selected)}
                 // Enable action buttons
                 showActions={true}
-                onUpdate={handleUpdate}
                 onDelete={handleDelete}
-                onView={handleView}
-                onImages={handleImageView}
                 actionLabels={{ update: 'Edit', delete: 'Remove', view: 'View', images: 'Images' }}
                 className="w-full" // Add this to ensure the table itself takes full width
                 pagination={{
@@ -155,7 +114,7 @@ function Products() {
                 }}
             />
             <DeleteModal
-                data={selectedProduct}
+                data={selectedNewsletter}
                 show={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 onConfirmDelete={confirmDelete}
@@ -164,4 +123,4 @@ function Products() {
     );
 }
 
-export default Products;
+export default Newsletters;

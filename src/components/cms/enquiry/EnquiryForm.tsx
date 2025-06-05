@@ -2,11 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
-
-
 interface EnquiryFormProps {
   enquiryId?: string; // Optional - if provided, form is in edit mode
-  initialData?: Enquiry; // Optional - if provided, prefile the form with data rather fetching from server
+  initialData?: Enquiry; // Optional - if provided, prefill the form with data rather fetching from server
   onSuccess?: () => void; // Optional callback after successful submission
 }
 
@@ -29,10 +27,9 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
       name: '',
       email: '',
       phone: '',
-      subject: '',
-      country: '',
-      state: '',
-      message: '',
+      interest: '',
+      location: '',
+      description: '',
       status: 'new',
       priority: 'medium'
     }
@@ -168,69 +165,47 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
             )}
           </div>
 
-          {/* Subject Field */}
+          {/* Interest Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-              Subject <span className="text-red-500">*</span>
+            <label htmlFor="interest" className="block text-sm font-medium text-gray-700 mb-1">
+              Interest <span className="text-red-500">*</span>
             </label>
             <input
-              id="subject"
+              id="interest"
               type="text"
-              {...register('subject', {
-                required: 'Subject is required',
-                minLength: { value: 4, message: 'Subject must be at least 4 characters' },
-                maxLength: { value: 150, message: 'Subject cannot exceed 150 characters' }
+              {...register('interest', {
+                required: 'Interest is required',
+                minLength: { value: 2, message: 'Interest must be at least 2 characters' },
+                maxLength: { value: 150, message: 'Interest cannot exceed 150 characters' }
               })}
-              className={`block w-full rounded-lg border ${errors.subject ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Subject"
+              className={`block w-full rounded-lg border ${errors.interest ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter Your Interest"
               disabled={isLoading}
             />
-            {errors.subject && (
-              <p className="mt-1 text-sm text-red-600">{errors.subject.message}</p>
+            {errors.interest && (
+              <p className="mt-1 text-sm text-red-600">{errors.interest.message}</p>
             )}
           </div>
 
-          {/* Country Field */}
-          <div className="col-span-1 w-full">
-            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1">
-              Country <span className="text-red-500">*</span>
+          {/* Location Field */}
+          <div className="col-span-1 md:col-span-2 w-full">
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
+              Location <span className="text-red-500">*</span>
             </label>
             <input
-              id="country"
+              id="location"
               type="text"
-              {...register('country', {
-                required: 'Country is required',
-                minLength: { value: 2, message: 'Country must be at least 2 characters' },
-                maxLength: { value: 50, message: 'Country cannot exceed 50 characters' }
+              {...register('location', {
+                required: 'Location is required',
+                minLength: { value: 2, message: 'Location must be at least 2 characters' },
+                maxLength: { value: 100, message: 'Location cannot exceed 100 characters' }
               })}
-              className={`block w-full rounded-lg border ${errors.country ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Country"
+              className={`block w-full rounded-lg border ${errors.location ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter Your Location"
               disabled={isLoading}
             />
-            {errors.country && (
-              <p className="mt-1 text-sm text-red-600">{errors.country.message}</p>
-            )}
-          </div>
-
-          {/* State Field */}
-          <div className="col-span-1 w-full">
-            <label htmlFor="state" className="block text-sm font-medium text-gray-700 mb-1">
-              State <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="state"
-              type="text"
-              {...register('state', {
-                required: 'State is required',
-                minLength: { value: 2, message: 'State must be at least 2 characters' },
-                maxLength: { value: 50, message: 'State cannot exceed 50 characters' }
-              })}
-              className={`block w-full rounded-lg border ${errors.state ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your State"
-              disabled={isLoading}
-            />
-            {errors.state && (
-              <p className="mt-1 text-sm text-red-600">{errors.state.message}</p>
+            {errors.location && (
+              <p className="mt-1 text-sm text-red-600">{errors.location.message}</p>
             )}
           </div>
 
@@ -272,25 +247,25 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
             </div>
           )}
 
-          {/* Message Field */}
+          {/* Description Field */}
           <div className="col-span-1 md:col-span-2 w-full">
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-              Message <span className="text-red-500">*</span>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
-              id="message"
-              {...register('message', {
-                required: 'Message is required',
-                minLength: { value: 10, message: 'Message must be at least 10 characters' },
-                maxLength: { value: 1000, message: 'Message cannot exceed 1000 characters' }
+              id="description"
+              {...register('description', {
+                required: 'Description is required',
+                minLength: { value: 10, message: 'Description must be at least 10 characters' },
+                maxLength: { value: 1000, message: 'Description cannot exceed 1000 characters' }
               })}
               rows={4}
-              className={`block w-full rounded-lg border ${errors.message ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter your message here"
+              className={`block w-full rounded-lg border ${errors.description ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Enter your description here"
               disabled={isLoading}
             />
-            {errors.message && (
-              <p className="mt-1 text-sm text-red-600">{errors.message.message}</p>
+            {errors.description && (
+              <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
               Max 1000 characters

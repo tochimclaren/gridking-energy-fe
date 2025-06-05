@@ -45,9 +45,10 @@ import EnquiryUpdate from './pages/cms/enquiry/EnquiryUpdate';
 import EnquiryCreate from './pages/cms/enquiry/EnquiryCreate';
 import Downloads from './pages/cms/download/Downloads';
 import ForgotPasswordForm from './components/cms/auth/ForgotPasswordForm';
-import UserCreateForm from './components/cms/auth/UserCreateForm';
+// import UserCreateForm from './components/cms/auth/UserCreateForm';
 
 import NotFoundPage from './pages/errors/NotFoundPage';
+import Newsletters from './pages/cms/newsletter/Newsletters';
 
 
 
@@ -55,10 +56,7 @@ function App() {
   return (
 
     <AuthProvider>
-      <BrowserRouter future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}>
+      <BrowserRouter>
         <Routes>
           {/* main layout */}
           <Route element={<MainLayout />}>
@@ -271,7 +269,15 @@ function App() {
                 <Downloads />
               </ProtectedRoute>
             } />
+                      {/* Newsletter route */}
+          <Route path="/cms/newsletters" element={
+            <ProtectedRoute level="admin">
+              <Newsletters />
+            </ProtectedRoute>
+          } />
           </Route>
+
+          {/* Authenticated routes */}
           <Route path="/" element={<Navigate to="/cms/dashboard" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
