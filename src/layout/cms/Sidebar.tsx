@@ -4,7 +4,8 @@ import {
     BookImage, CircuitBoard, Download, FolderTree,
     GalleryHorizontal, Images, MessageSquareQuote,
     PackageSearch, ScrollText, ChevronLeft, ChevronRight,
-    Menu, User2, Mail
+    Menu, User2, Mail,
+    Settings
 } from 'lucide-react';
 
 
@@ -25,6 +26,7 @@ function Sidebar() {
         { label: 'Downloads', icon: <Download size={20} />, path: '/cms/downloads' },
         { label: 'Users', icon: <User2 size={20} />, path: '/cms/users' },
         { label: 'Newsletters', icon: <Mail size={20} />, path: '/cms/newsletters' },
+        { label: 'Configurations', icon: <Settings size={20} />, path: '/cms/configurations' },
     ];
 
     const toggleSidebar = () => {

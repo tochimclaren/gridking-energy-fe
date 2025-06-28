@@ -49,6 +49,7 @@ import ForgotPasswordForm from './components/cms/auth/ForgotPasswordForm';
 
 import NotFoundPage from './pages/errors/NotFoundPage';
 import Newsletters from './pages/cms/newsletter/Newsletters';
+import Configuration from './pages/cms/configuration/Configuration';
 
 
 
@@ -269,10 +270,15 @@ function App() {
                 <Downloads />
               </ProtectedRoute>
             } />
-                      {/* Newsletter route */}
+            {/* Newsletter route */}
           <Route path="/cms/newsletters" element={
             <ProtectedRoute level="admin">
               <Newsletters />
+            </ProtectedRoute>
+          } />
+            <Route path="/cms/configurations" element={
+            <ProtectedRoute level="admin">
+              <Configuration />
             </ProtectedRoute>
           } />
           </Route>
