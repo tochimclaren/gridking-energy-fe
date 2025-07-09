@@ -46,6 +46,7 @@ interface IProduct {
   slug: string;
   status: Status;
   category: string | CategoryInProduct;
+  price: number;
   hotSell: boolean;
   createdAt?: Date;
   attributes: IProductAttribute[];
@@ -87,6 +88,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
       slug: '',
       status: Status.NewArrival,
       category: '',
+      price: 0,
       hotSell: false,
       attributes: [],
     },
@@ -119,6 +121,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
         category: typeof initialData.category === 'object'
           ? initialData.category._id
           : initialData.category,
+        price: initialData.price || 0,
         attributes: initialData.attributes || []
       };
       reset(formData);
@@ -172,12 +175,10 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
     setLoading(true);
     setError(null);
     const { id, _id, images, createdAt, updatedAt, ...cleanData } = data;
-
-    console.log(data)
-
     try {
       if (initialData?._id) {
         await axios.put(`${BASE_URL}/product/${initialData._id}`, cleanData);
+        console.log(cleanData)
       } else {
         await axios.post(`${BASE_URL}/product`, cleanData);
       }
@@ -281,7 +282,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Product Name*</label>
               <input
@@ -306,6 +307,30 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
               />
               {errors.slug && (
                 <p className="text-sm text-red-600 mt-1">{errors.slug.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Price (₦)*</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">₦</span>
+                </div>
+                <input
+                  {...register('price', { 
+                    required: 'Price is required',
+                    min: { value: 0, message: 'Price cannot be negative' },
+                    valueAsNumber: true
+                  })}
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  className={`block w-full rounded-lg border ${errors.price ? 'border-red-500' : 'border-gray-300'} pl-8 pr-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                  placeholder="0.00"
+                />
+              </div>
+              {errors.price && (
+                <p className="text-sm text-red-600 mt-1">{errors.price.message}</p>
               )}
             </div>
 

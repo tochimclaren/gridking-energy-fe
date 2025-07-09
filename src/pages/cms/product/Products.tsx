@@ -115,6 +115,13 @@ function Products() {
                 headers={[
                     { key: 'name', label: 'Name', sortable: true },
                     { key: 'slug', label: 'Slug', sortable: true },
+                    { key: 'price', label: 'Price', sortable: true, render: (value) => `₦${value.toFixed(2)}` },
+                    {
+                        key: 'createdAt',
+                        label: 'Added',
+                        sortable: true,
+                        render: (value) => new Date(value).toLocaleDateString()
+                    },
                     {
                         key: 'category',
                         label: 'Category',

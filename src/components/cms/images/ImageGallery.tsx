@@ -6,6 +6,7 @@ import {
   ArrowLeft, ArrowRight, Image as ImagePreview
 } from 'lucide-react';
 
+
 interface ImageGalleryProps {
   refModel?: string;
   refId?: string;
@@ -32,18 +33,11 @@ interface PaginationData {
   totalPages: number;
 }
 
-interface ImageApiResponse {
-  success: boolean;
-  data: {
-    images: IImage[];
-    pagination: PaginationData;
-  };
-}
 
 const ImageGallery: React.FC<ImageGalleryProps> = ({
   refModel = 'Product',
   refId,
-  apiUrl = '/api/images',
+  apiUrl,
   initialView = 'grid',
   onSuccess
 }) => {
@@ -72,7 +66,14 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
     fetchImages();
   }, [apiUrl, refId, refModel, pagination.page, pagination.limit]);
 
+  console.log('ImageGallery mounted with API URL:', apiUrl);
+
   const fetchImages = async () => {
+    if (!apiUrl) {
+      setError('API URL is not defined');
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const params: any = {

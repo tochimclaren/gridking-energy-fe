@@ -1,7 +1,6 @@
 import { forwardRef } from 'react';
 import { DateFilterRange } from 'types/table';
 
-
 interface DateFilterDropdownProps {
   label: string;
   filterRange: DateFilterRange;
@@ -16,16 +15,16 @@ const DateFilterDropdown = forwardRef<HTMLDivElement, DateFilterDropdownProps>(
     return (
       <div 
         ref={ref}
-        className="absolute z-10 mt-1 w-72 bg-white rounded-md shadow-lg p-4 border border-gray-200"
+        className="absolute z-10 mt-1 w-72 max-w-[calc(100vw-2rem)] bg-white rounded-md shadow-lg p-4 border border-gray-200 right-0 min-w-64"
       >
         <div className="flex justify-between items-center mb-3">
-          <h3 className="text-sm font-medium text-gray-700">
+          <h3 className="text-sm font-medium text-gray-700 truncate pr-2">
             {label} Date Range
           </h3>
           <button
             type="button"
             onClick={onClear}
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-gray-500 hover:text-gray-700 flex-shrink-0"
           >
             Clear
           </button>
@@ -37,7 +36,7 @@ const DateFilterDropdown = forwardRef<HTMLDivElement, DateFilterDropdownProps>(
               type="date"
               value={filterRange.start || ''}
               onChange={(e) => onChangeStart(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 text-sm py-1"
+              className="block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500 text-sm py-1 min-w-0"
             />
           </div>
           <div>
@@ -46,7 +45,7 @@ const DateFilterDropdown = forwardRef<HTMLDivElement, DateFilterDropdownProps>(
               type="date"
               value={filterRange.end || ''}
               onChange={(e) => onChangeEnd(e.target.value)}
-              className="block w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500 text-sm py-1"
+              className="block w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500 text-sm py-1 min-w-0"
             />
           </div>
           <div className="flex justify-end">
