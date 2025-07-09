@@ -14,6 +14,8 @@ enum Status {
 }
 
 interface IProductAttribute {
+  _id?: string;
+  id?: string;
   name: string;
   value: any;
   dataType: 'string' | 'number' | 'boolean' | 'date';
@@ -177,8 +179,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
     const { id, _id, images, createdAt, updatedAt, ...cleanData } = data;
     try {
       if (initialData?._id) {
-        await axios.put(`${BASE_URL}/product/${initialData._id}`, cleanData);
         console.log(cleanData)
+        await axios.put(`${BASE_URL}/product/${initialData._id}`, cleanData);
       } else {
         await axios.post(`${BASE_URL}/product`, cleanData);
       }
