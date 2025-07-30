@@ -165,10 +165,8 @@ const ConfigurationManager: React.FC = () => {
 
     try {
       setActionLoading(`add-${emailType}`);
-      
       const endpoint = `${BASE_URL}/configuration/${emailType === 'admin' ? 'admins' : 'sales'}`;
       const response = await axios.post(endpoint, { email: newEmail.trim() });
-      
       const data = response.data;
       
       if (data.success && data.data) {
@@ -194,10 +192,8 @@ const ConfigurationManager: React.FC = () => {
 
     try {
       setActionLoading(`remove-${type}-${email}`);
-      
       const endpoint = `${BASE_URL}/configuration/${type === 'admin' ? 'admins' : 'sales'}`;
       const response = await axios.delete(endpoint, { data: { email } });
-      
       const data = response.data;
       
       if (data.success && data.data) {
