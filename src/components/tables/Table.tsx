@@ -276,7 +276,6 @@ const Table: React.FC<TableProps> = ({
     link.click();
     document.body.removeChild(link);
   };
-
   // Export data to XLSX
   const exportToXLSX = () => {
     const wsData = [
@@ -299,7 +298,6 @@ const Table: React.FC<TableProps> = ({
     utils.book_append_sheet(wb, ws, 'Sheet1');
     writeFile(wb, `${title.replace(/\s+/g, '_')}_export.xlsx`);
   };
-
   return (
     <div className={`p-4 w-full ${className}`}>
       <div className="mb-4 flex flex-col gap-4">
@@ -310,7 +308,6 @@ const Table: React.FC<TableProps> = ({
           onExportCSV={exportToCSV}
           onExportXLSX={exportToXLSX}
         />
-        
         {/* Search and Filter Bar Component */}
         <SearchAndFilterBar
           searchTerm={searchTerm}
@@ -324,7 +321,6 @@ const Table: React.FC<TableProps> = ({
           dateFilterRef={dateFilterRef}
         />
       </div>
-
       <div className="overflow-x-auto bg-white rounded-lg shadow">
         <table className="min-w-full divide-y divide-gray-200">
           {/* Table Columns Component */}
@@ -339,7 +335,6 @@ const Table: React.FC<TableProps> = ({
             allSelected={selectedRows.length === sortedData.length && sortedData.length > 0}
             onSelectAll={selectAllRows}
           />
-          
           {/* Table Rows Component */}
           <TableRows
             data={sortedData}
@@ -357,7 +352,6 @@ const Table: React.FC<TableProps> = ({
           />
         </table>
       </div>
-
       {/* Pagination Component */}
       {pagination && (
         <Pagination pagination={pagination} />

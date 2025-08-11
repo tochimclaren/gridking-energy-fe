@@ -39,10 +39,10 @@ const TableRows: React.FC<TableRowsProps> = ({
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+
   const renderBoolean = (value: boolean) => (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-      value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-    }`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      }`}>
       {value ? (
         <>
           <Check className="h-3 w-3 mr-1" />
@@ -61,8 +61,8 @@ const TableRows: React.FC<TableRowsProps> = ({
     return (
       <tbody className="bg-white divide-y divide-gray-200">
         <tr>
-          <td 
-            colSpan={headers.length + (selectable ? 1 : 0) + (showActions ? 1 : 0)} 
+          <td
+            colSpan={headers.length + (selectable ? 1 : 0) + (showActions ? 1 : 0)}
             className="px-6 py-4 text-center text-sm text-gray-500"
           >
             No data available
@@ -94,12 +94,9 @@ const TableRows: React.FC<TableRowsProps> = ({
               key={`${row[keyField]}-${header.key}`}
               className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
             >
-              {header.render 
-                ? header.render(row[header.key], row)
-                : header.boolean
-                  ? renderBoolean(row[header.key])
-                  : header.isDate
-                    ? formatDate(row[header.key])
+              {header.render ? header.render(row[header.key], row)
+                : header.boolean ? renderBoolean(row[header.key])
+                  : header.isDate ? formatDate(row[header.key])
                     : row[header.key]}
             </td>
           ))}

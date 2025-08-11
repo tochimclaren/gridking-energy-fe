@@ -2,9 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
 
+interface Appliance {
+  name: string;
+  wattage: number;
+  isSensitive: boolean;
+  isMotorLoad: boolean;
+  surgeFactor: number;
+  dailyHours: number | null;
+  applianceType: 'lighting' | 'HVAC' | 'electronics' | 'motor' | 'other';
+  voltage: '12V' | '24V' | '48V' | 'AC';
+}
+
 interface ApplianceFormProps {
   applianceId?: string;
-  initialData?: Carousel;
+  initialData?: Appliance;
   onSuccess?: () => void;
 }
 
@@ -20,13 +31,21 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<Appliance>({
     defaultValues: {
       name: '',
       wattage: 0,
       isSensitive: false,
+      isMotorLoad: false,
+      surgeFactor: 1,
+      dailyHours: null,
+      applianceType: 'other',
+      voltage: 'AC',
     }
   });
+
+  const isMotorLoad = watch('isMotorLoad');
 
   useEffect(() => {
     if (applianceId) {
@@ -35,8 +54,26 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
           setIsLoading(true);
           const response = await axios.get(`${BASE_URL}/appliance/${applianceId}`);
           const { data } = response.data;
-          const { name, wattage, isSensitive } = data;
-          reset({ name, wattage, isSensitive });
+          const { 
+            name, 
+            wattage, 
+            isSensitive, 
+            isMotorLoad, 
+            surgeFactor, 
+            dailyHours, 
+            applianceType, 
+            voltage 
+          } = data;
+          reset({ 
+            name, 
+            wattage, 
+            isSensitive, 
+            isMotorLoad, 
+            surgeFactor, 
+            dailyHours, 
+            applianceType, 
+            voltage 
+          });
         } catch (err) {
           console.error('Error fetching appliance:', err);
           setError('Failed to load appliance data');
@@ -55,10 +92,8 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
       setError(null);
       if (isEditMode && applianceId) {
         await axios.put(`${BASE_URL}/appliance/${applianceId}`, data);
-
       } else {
         await axios.post(`${BASE_URL}/appliance`, data);
-
         reset();
       }
       if (onSuccess) {
@@ -87,8 +122,7 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-full">
-        {/* ... rest of your form fields remain exactly the same ... */}
-        <div className="grid grid-cols-3 md:grid-cols-3 gap-6 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {/* Name Field */}
           <div className="col-span-1 w-full">
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -100,7 +134,7 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
               {...register('name', {
                 required: 'Appliance Name is required',
                 minLength: { value: 2, message: 'Appliance Name must be at least 2 characters' },
-                maxLength: { value: 100, message: 'Appliance Name cannot exceed 100 characters' }
+                maxLength: { value: 250, message: 'Appliance Name cannot exceed 250 characters' }
               })}
               className={`block w-full rounded-lg border ${errors.name ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Eg: Fridge"
@@ -113,17 +147,19 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
 
           {/* Wattage Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-              Wattage
+            <label htmlFor="wattage" className="block text-sm font-medium text-gray-700 mb-1">
+              Wattage <span className="text-red-500">*</span>
             </label>
             <input
               id="wattage"
               type="number"
               {...register('wattage', {
-                maxLength: { value: 20, message: 'Wattage cannot exceed 500 characters' }
+                required: 'Wattage is required',
+                min: { value: 0, message: 'Wattage must be at least 0' },
+                valueAsNumber: true
               })}
               className={`block w-full rounded-lg border ${errors.wattage ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter wattage"
+              placeholder="Enter wattage (W)"
               disabled={isLoading}
             />
             {errors.wattage && (
@@ -131,35 +167,153 @@ const ApplianceForm: React.FC<ApplianceFormProps> = ({ applianceId, initialData,
             )}
           </div>
 
+          {/* Appliance Type Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="applianceType" className="block text-sm font-medium text-gray-700 mb-1">
+              Appliance Type
+            </label>
+            <select
+              id="applianceType"
+              {...register('applianceType')}
+              className={`block w-full rounded-lg border ${errors.applianceType ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              disabled={isLoading}
+            >
+              <option value="other">Other</option>
+              <option value="lighting">Lighting</option>
+              <option value="HVAC">HVAC</option>
+              <option value="electronics">Electronics</option>
+              <option value="motor">Motor</option>
+            </select>
+            {errors.applianceType && (
+              <p className="mt-1 text-sm text-red-600">{errors.applianceType.message}</p>
+            )}
+          </div>
+
+          {/* Voltage Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="voltage" className="block text-sm font-medium text-gray-700 mb-1">
+              Voltage
+            </label>
+            <select
+              id="voltage"
+              {...register('voltage')}
+              className={`block w-full rounded-lg border ${errors.voltage ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              disabled={isLoading}
+            >
+              <option value="AC">AC (Mains)</option>
+              <option value="12V">12V DC</option>
+              <option value="24V">24V DC</option>
+              <option value="48V">48V DC</option>
+            </select>
+            {errors.voltage && (
+              <p className="mt-1 text-sm text-red-600">{errors.voltage.message}</p>
+            )}
+          </div>
+
+          {/* Daily Hours Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="dailyHours" className="block text-sm font-medium text-gray-700 mb-1">
+              Daily Usage Hours
+            </label>
+            <input
+              id="dailyHours"
+              type="number"
+              step="0.1"
+              {...register('dailyHours', {
+                min: { value: 0, message: 'Daily hours must be at least 0' },
+                max: { value: 24, message: 'Daily hours cannot exceed 24' },
+                valueAsNumber: true
+              })}
+              className={`block w-full rounded-lg border ${errors.dailyHours ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="Hours per day (optional)"
+              disabled={isLoading}
+            />
+            {errors.dailyHours && (
+              <p className="mt-1 text-sm text-red-600">{errors.dailyHours.message}</p>
+            )}
+          </div>
+
+          {/* Surge Factor Field */}
+          <div className="col-span-1 w-full">
+            <label htmlFor="surgeFactor" className="block text-sm font-medium text-gray-700 mb-1">
+              Surge Factor {isMotorLoad && <span className="text-red-500">*</span>}
+            </label>
+            <input
+              id="surgeFactor"
+              type="number"
+              step="0.1"
+              {...register('surgeFactor', {
+                required: isMotorLoad ? 'Surge factor is required for motor loads' : false,
+                min: { value: 1, message: 'Surge factor must be at least 1' },
+                max: { value: 10, message: 'Surge factor cannot exceed 10' },
+                valueAsNumber: true
+              })}
+              className={`block w-full rounded-lg border ${errors.surgeFactor ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              placeholder="1.0 - 10.0"
+              disabled={isLoading}
+            />
+            {errors.surgeFactor && (
+              <p className="mt-1 text-sm text-red-600">{errors.surgeFactor.message}</p>
+            )}
+            <p className="mt-1 text-xs text-gray-500">
+              Factor to account for startup current surge (1 = no surge)
+            </p>
+          </div>
+        </div>
+
+        {/* Checkbox Fields */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 w-full">
           {/* isSensitive Field */}
           <div className="col-span-1 w-full">
-            <label htmlFor="isSensitive" className="block text-sm font-medium text-gray-700 mb-1">
-              Sensitive Appliance? <span className="text-red-500">*</span>
-            </label>
-            <div className="relative flex items-start mt-1">
+            <div className="relative flex items-start">
               <div className="flex items-center h-5">
                 <input
                   id="isSensitive"
                   type="checkbox"
                   {...register('isSensitive')}
-                  className={`block w-full rounded-lg border ${errors.isSensitive ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                  className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
                   disabled={isLoading}
                 />
               </div>
               <div className="ml-3 text-sm">
                 <label htmlFor="isSensitive" className="font-medium text-gray-700">
-                  Check if appliance is sensitive to power fluctuations
+                  Sensitive to power fluctuations
                 </label>
+                <p className="text-gray-500">Check if appliance requires stable power supply</p>
               </div>
             </div>
             {errors.isSensitive && (
               <p className="mt-1 text-sm text-red-600">{errors.isSensitive.message}</p>
             )}
           </div>
+
+          {/* isMotorLoad Field */}
+          <div className="col-span-1 w-full">
+            <div className="relative flex items-start">
+              <div className="flex items-center h-5">
+                <input
+                  id="isMotorLoad"
+                  type="checkbox"
+                  {...register('isMotorLoad')}
+                  className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="isMotorLoad" className="font-medium text-gray-700">
+                  Motor load appliance
+                </label>
+                <p className="text-gray-500">Check if appliance has a motor (requires surge factor)</p>
+              </div>
+            </div>
+            {errors.isMotorLoad && (
+              <p className="mt-1 text-sm text-red-600">{errors.isMotorLoad.message}</p>
+            )}
+          </div>
         </div>
 
         {/* Form Actions */}
-        <div className="mt-6 flex justify-end space-x-3 w-full">
+        <div className="mt-8 flex justify-end space-x-3 w-full">
           <button
             type="button"
             onClick={() => reset()}

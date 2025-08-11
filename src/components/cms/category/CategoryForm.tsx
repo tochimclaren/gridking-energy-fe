@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { AlertCircle, X } from 'lucide-react';
 
 interface CategoryFormData {
   name: string;
@@ -14,10 +15,23 @@ interface CategoryFormProps {
   onSuccess?: () => void; // Optional callback after successful submission
 }
 
+// Updated error interface to handle detailed validation errors
+interface ValidationError {
+  message: string;
+  details?: string[];
+}
+
+interface Category {
+  _id: string;
+  name: string;
+  parent?: string;
+  children?: Category[];
+}
+
 const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ValidationError | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [autoGenerateSlug, setAutoGenerateSlug] = useState<boolean>(true);
 
@@ -55,7 +69,10 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         setCategories(buildCategoryTree(data));
       } catch (err) {
         console.error('Error fetching categories:', err);
-        setError('Failed to load categories');
+        setError({
+          message: 'Failed to load categories',
+          details: []
+        });
       } finally {
         setIsLoading(false);
         reset()
@@ -76,9 +93,21 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
           // Populate form with category data
           reset({ name, slug, description, parent });
           setAutoGenerateSlug(false);
-        } catch (err) {
+        } catch (err: any) {
           console.error('Error fetching category:', err);
-          setError('Failed to load category data');
+          const errorResponse = err.response?.data;
+          
+          if (errorResponse) {
+            setError({
+              message: errorResponse.message || 'Failed to load category data',
+              details: errorResponse.details || []
+            });
+          } else {
+            setError({
+              message: 'Failed to load category data',
+              details: []
+            });
+          }
         } finally {
           setIsLoading(false);
         }
@@ -120,7 +149,21 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
       }
     } catch (err: any) {
       console.error('Error saving category:', err);
-      setError(err.response?.data?.message || 'Failed to save category');
+      
+      // Enhanced error handling to capture detailed validation errors
+      const errorResponse = err.response?.data;
+      
+      if (errorResponse) {
+        setError({
+          message: errorResponse.message || 'Failed to save category',
+          details: errorResponse.details || []
+        });
+      } else {
+        setError({
+          message: 'An unexpected error occurred',
+          details: []
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -187,10 +230,33 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         {isEditMode ? 'Edit Category' : 'Create New Category'}
       </h2>
 
+      {/* Enhanced error display with detailed validation messages */}
       {error && (
-        <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 text-red-700">
-          <p className="font-medium">Error</p>
-          <p>{error}</p>
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+          <div className="flex items-start">
+            <AlertCircle size={20} className="text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-medium text-red-800">{error.message}</h3>
+              {error.details && error.details.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-red-700 font-medium mb-2">Details:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {error.details.map((detail, index) => (
+                      <li key={index} className="text-sm text-red-600">
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => setError(null)} 
+              className="text-red-500 hover:text-red-700 ml-4 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -246,7 +312,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
                 maxLength: { value: 100, message: 'Slug cannot exceed 100 characters' },
                 pattern: { value: /^[a-z0-9-]+$/, message: 'Slug must be URL-friendly' }
               })}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className={`w-full px-4 py-2 border ${errors.slug ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
               placeholder="url-friendly-slug"
               disabled={isLoading || autoGenerateSlug}
             />
@@ -269,6 +335,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
               <option value="">None (Top Level Category)</option>
               {renderCategoryOptions(categories, 0, categoryId)}
             </select>
+            {errors.parent && (
+              <p className="mt-1 text-sm text-red-600">{errors.parent.message}</p>
+            )}
           </div>
 
           {/* Description Field */}

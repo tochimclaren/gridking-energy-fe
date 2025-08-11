@@ -54,6 +54,7 @@ function Appliance() {
 
   useEffect(() => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
+    console.log(BASE_URL)
     const getAppliance = async () => {
       try {
         setIsLoading(true);

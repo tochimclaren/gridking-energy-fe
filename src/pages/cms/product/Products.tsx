@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import DeleteModal from '../../../components/utils/DeleteModal';
 import CreateButton from '../../../components/utils/CreateButton';
+import { snakeToSpaces } from '../../../utils/helpers';
 
 function Products() {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
@@ -48,7 +49,6 @@ function Products() {
     useEffect(() => {
         fetchData(pagination.page, pagination.limit);
     }, [pagination.page, pagination.limit]);
-
 
 
     const handleUpdate = (product: Product) => {
@@ -126,7 +126,7 @@ function Products() {
                         key: 'category',
                         label: 'Category',
                         sortable: true,
-                        render: (value, row) => value && value.name ? value.name : 'N/A'
+                        render: (value, _) => value && value.name ? value.name : 'N/A'
                     },
                     {
                         key: 'status',
@@ -135,7 +135,7 @@ function Products() {
                         render: (value) => (
                             <span className={`px-2 py-1 rounded-full text-xs ${value === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                 }`}>
-                                {value}
+                                {snakeToSpaces(value)}
                             </span>
                         )
                     }

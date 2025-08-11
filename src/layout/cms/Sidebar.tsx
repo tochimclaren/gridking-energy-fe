@@ -73,7 +73,7 @@ function Sidebar() {
 
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto">
-                    <ul className="space-y-1">
+                    <ul className="">
                         {menuItems.map((item, index) => {
                             const isActive = location.pathname === item.path;
                             return (

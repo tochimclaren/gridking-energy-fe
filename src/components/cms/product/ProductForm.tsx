@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, ChevronRight, Plus, Trash2, Check, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus, Trash2, Check, X, AlertCircle } from 'lucide-react';
 import { commonAttributeNames } from '../../../utils/constants';
+import {snakeToSpaces} from '../../../utils/helpers';
 
 enum Status {
   NewArrival = 'NEW_ARRIVAL',
@@ -11,6 +12,12 @@ enum Status {
   OutOfStock = 'OUT_OF_STOCK',
   Featured = 'FEATURED',
   ComingSoon = 'COMING_SOON'
+}
+
+enum ProductType {
+  Inverter = 'INVERTER',
+  SolarPanel = 'SOLAR_PANEL',
+  Battery = 'BATTERY'
 }
 
 interface IProductAttribute {
@@ -52,6 +59,7 @@ interface IProduct {
   hotSell: boolean;
   createdAt?: Date;
   attributes: IProductAttribute[];
+  productType: ProductType;
   updatedAt?: Date;
 }
 
@@ -66,15 +74,19 @@ interface ProductFormProps {
   onSuccess?: () => void;
 }
 
+// Updated error interface to handle detailed validation errors
+interface ValidationError {
+  message: string;
+  details?: string[];
+}
+
 const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ValidationError | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-
-
 
   const {
     control,
@@ -93,6 +105,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
       price: 0,
       hotSell: false,
       attributes: [],
+      productType: ProductType.Inverter,
     },
   });
 
@@ -102,6 +115,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
   });
 
   const statusOptions = Object.values(Status);
+  const productTypeOptions = Object.values(ProductType);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -124,7 +138,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
           ? initialData.category._id
           : initialData.category,
         price: initialData.price || 0,
-        attributes: initialData.attributes || []
+        attributes: initialData.attributes || [],
+        productType: initialData.productType || ProductType.Inverter
       };
       reset(formData);
 
@@ -192,7 +207,21 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
         navigate('/cms/products');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred');
+      // Enhanced error handling to capture detailed validation errors
+      const errorResponse = err.response?.data;
+      
+      if (errorResponse) {
+        setError({
+          message: errorResponse.message || 'An error occurred',
+          details: errorResponse.details || []
+        });
+      } else {
+        setError({
+          message: 'An unexpected error occurred',
+          details: []
+        });
+      }
+      
       console.error('Error saving product', err);
     } finally {
       setLoading(false);
@@ -263,28 +292,57 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
     }
   };
 
+  const formatProductTypeDisplay = (type: ProductType) => {
+    switch (type) {
+      case ProductType.SolarPanel:
+        return 'Solar Panel';
+      case ProductType.Inverter:
+        return 'Inverter';
+      case ProductType.Battery:
+        return 'Battery';
+    }
+  };
+
   return (
     <div className="w-full p-5 bg-white border-gray-200">
       <h2 className="text-2xl font-bold text-gray-800 mb-8 pb-2 border-b border-gray-200">
         {initialData ? 'Edit Product' : 'Create New Product'}
       </h2>
 
+      {/* Enhanced error display with detailed validation messages */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 flex items-center">
-          <div className="flex-1">
-            <h3 className="font-medium">Error</h3>
-            <p>{error}</p>
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+          <div className="flex items-start">
+            <AlertCircle size={20} className="text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-medium text-red-800">{error.message}</h3>
+              {error.details && error.details.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-red-700 font-medium mb-2">Details:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {error.details.map((detail, index) => (
+                      <li key={index} className="text-sm text-red-600">
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => setError(null)} 
+              className="text-red-500 hover:text-red-700 ml-4 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
           </div>
-          <button onClick={() => setError(null)} className="text-red-500 hover:text-red-700">
-            <X size={18} />
-          </button>
         </div>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <div className="space-y-6">
           <h3 className="text-lg font-semibold text-gray-800 border-b pb-2">Basic Information</h3>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Product Name*</label>
               <input
@@ -337,6 +395,30 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
             </div>
 
             <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700">Product Type*</label>
+              <Controller
+                name="productType"
+                control={control}
+                rules={{ required: 'Product type is required' }}
+                render={({ field }) => (
+                  <select
+                    {...field}
+                    className={`block w-full rounded-lg border ${errors.productType ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                  >
+                    {productTypeOptions.map((type) => (
+                      <option key={type} value={type}>
+                        {formatProductTypeDisplay(type)}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              />
+              {errors.productType && (
+                <p className="text-sm text-red-600 mt-1">{errors.productType.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Status*</label>
               <Controller
                 name="status"
@@ -349,7 +431,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
                   >
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
-                        {status.replace('_', ' ')}
+                        {snakeToSpaces(status)}
                       </option>
                     ))}
                   </select>
@@ -554,4 +636,4 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialData, onSuccess }) => 
   );
 };
 
-export default ProductForm
+export default ProductForm;
