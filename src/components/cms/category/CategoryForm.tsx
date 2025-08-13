@@ -15,7 +15,6 @@ interface CategoryFormProps {
   onSuccess?: () => void; // Optional callback after successful submission
 }
 
-// Updated error interface to handle detailed validation errors
 interface ValidationError {
   message: string;
   details?: string[];
@@ -62,20 +61,30 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
     const fetchCategories = async () => {
       try {
         setIsLoading(true);
+        setError(null);
         const response = await axios.get(`${BASE_URL}/category`);
 
-        const {data}=response.data
+        const { data } = response.data;
         // Convert flat list to tree structure
         setCategories(buildCategoryTree(data));
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching categories:', err);
-        setError({
-          message: 'Failed to load categories',
-          details: []
-        });
+        
+        // Enhanced error handling for fetch operation
+        const errorResponse = err.response?.data;
+        if (errorResponse) {
+          setError({
+            message: errorResponse.message || 'Failed to load categories',
+            details: errorResponse.details || []
+          });
+        } else {
+          setError({
+            message: 'Failed to load categories',
+            details: []
+          });
+        }
       } finally {
         setIsLoading(false);
-        reset()
       }
     };
 
@@ -88,6 +97,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
       const fetchCategory = async () => {
         try {
           setIsLoading(true);
+          setError(null);
           const response = await axios.get(`${BASE_URL}/category/${categoryId}`);
           const { name, slug, description, parent } = response.data.data;          
           // Populate form with category data
@@ -95,6 +105,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
           setAutoGenerateSlug(false);
         } catch (err: any) {
           console.error('Error fetching category:', err);
+          
+          // Enhanced error handling to capture detailed validation errors
           const errorResponse = err.response?.data;
           
           if (errorResponse) {
@@ -123,7 +135,8 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
       const generatedSlug = nameValue
         .toLowerCase()
         .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
+        .replace(/\s+/g, '-')
+        .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
       
       setValue('slug', generatedSlug);
     }
@@ -134,6 +147,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
     if (data.parent === '') {
       data.parent = null;
     }
+    
     try {
       setIsLoading(true);
       setError(null);
@@ -142,6 +156,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         await axios.put(`${BASE_URL}/category/${categoryId}`, data);
       } else {
         await axios.post(`${BASE_URL}/category`, data);
+        reset(); // Reset form after successful creation
       }
 
       if (onSuccess) {
@@ -160,7 +175,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         });
       } else {
         setError({
-          message: 'An unexpected error occurred',
+          message: 'An unexpected error occurred while saving the category',
           details: []
         });
       }
@@ -230,7 +245,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         {isEditMode ? 'Edit Category' : 'Create New Category'}
       </h2>
 
-      {/* Enhanced error display with detailed validation messages */}
+      {/* Error display with detailed validation messages */}
       {error && (
         <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
           <div className="flex items-start">
@@ -296,8 +311,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
                   type="checkbox"
                   checked={autoGenerateSlug}
                   onChange={() => setAutoGenerateSlug(!autoGenerateSlug)}
-                  className={` ${errors.slug ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-                  />
+                  className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded"
+                  disabled={isLoading}
+                />
                 <label htmlFor="autoSlug" className="ml-2 text-xs text-gray-600">
                   auto-generate
                 </label>
@@ -310,19 +326,22 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
                 required: 'Slug is required',
                 minLength: { value: 2, message: 'Slug must be at least 2 characters' },
                 maxLength: { value: 100, message: 'Slug cannot exceed 100 characters' },
-                pattern: { value: /^[a-z0-9-]+$/, message: 'Slug must be URL-friendly' }
+                pattern: { value: /^[a-z0-9-]+$/, message: 'Slug must contain only lowercase letters, numbers, and hyphens' }
               })}
-              className={`w-full px-4 py-2 border ${errors.slug ? 'border-red-500' : 'border-gray-300'} rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+              className={`block w-full rounded-lg border ${errors.slug ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
               placeholder="url-friendly-slug"
               disabled={isLoading || autoGenerateSlug}
             />
             {errors.slug && (
               <p className="mt-1 text-sm text-red-600">{errors.slug.message}</p>
             )}
+            <p className="mt-1 text-xs text-gray-500">
+              URL-friendly identifier for the category
+            </p>
           </div>
 
           {/* Parent Category Field */}
-          <div className="col-span-2 w-full">
+          <div className="col-span-1 md:col-span-2 w-full">
             <label htmlFor="parent" className="block text-sm font-medium text-gray-700 mb-1">
               Parent Category
             </label>
@@ -338,6 +357,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
             {errors.parent && (
               <p className="mt-1 text-sm text-red-600">{errors.parent.message}</p>
             )}
+            <p className="mt-1 text-xs text-gray-500">
+              Select a parent category to create a subcategory
+            </p>
           </div>
 
           {/* Description Field */}
@@ -359,7 +381,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
               <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Max 500 characters
+              Optional description to help users understand this category (max 500 characters)
             </p>
           </div>
         </div>
@@ -368,7 +390,11 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ categoryId, onSuccess }) =>
         <div className="mt-6 flex justify-end space-x-3 w-full">
           <button
             type="button"
-            onClick={() => reset()}
+            onClick={() => {
+              reset();
+              setAutoGenerateSlug(true);
+              setError(null);
+            }}
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           >
