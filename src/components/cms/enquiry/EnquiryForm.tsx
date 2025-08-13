@@ -1,6 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { AlertCircle, X } from 'lucide-react';
+
+interface Enquiry {
+  _id?: string;
+  name: string;
+  email: string;
+  phone: string;
+  interest: string;
+  location: string;
+  description: string;
+  status: 'new' | 'in-progress' | 'completed';
+  priority: 'low' | 'medium' | 'high';
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 interface EnquiryFormProps {
   enquiryId?: string; // Optional - if provided, form is in edit mode
@@ -8,10 +23,15 @@ interface EnquiryFormProps {
   onSuccess?: () => void; // Optional callback after successful submission
 }
 
+interface ValidationError {
+  message: string;
+  details?: string[];
+}
+
 const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuccess }) => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ValidationError | null>(null);
 
   const isEditMode = Boolean(enquiryId);
 
@@ -44,12 +64,26 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
       const fetchEnquiry = async () => {
         try {
           setIsLoading(true);
+          setError(null);
           const response = await axios.get(`${BASE_URL}/enquiry/${enquiryId}`);
-          const {data} = response.data
+          const { data } = response.data;
           reset(data);
-        } catch (err) {
+        } catch (err: any) {
           console.error('Error fetching enquiry:', err);
-          setError('Failed to load enquiry data');
+          
+          // Enhanced error handling for fetch operation
+          const errorResponse = err.response?.data;
+          if (errorResponse) {
+            setError({
+              message: errorResponse.message || 'Failed to load enquiry data',
+              details: errorResponse.details || []
+            });
+          } else {
+            setError({
+              message: 'Failed to load enquiry data',
+              details: []
+            });
+          }
         } finally {
           setIsLoading(false);
         }
@@ -69,6 +103,7 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
         await axios.put(`${BASE_URL}/enquiry/${enquiryId}`, data);
       } else {
         await axios.post(`${BASE_URL}/enquiry`, data);
+        reset(); // Reset form after successful creation
       }
 
       if (onSuccess) {
@@ -76,7 +111,21 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
       }
     } catch (err: any) {
       console.error('Error saving enquiry:', err);
-      setError(err.response?.data?.message || 'Failed to save enquiry');
+      
+      // Enhanced error handling to capture detailed validation errors
+      const errorResponse = err.response?.data;
+      
+      if (errorResponse) {
+        setError({
+          message: errorResponse.message || 'Failed to save enquiry',
+          details: errorResponse.details || []
+        });
+      } else {
+        setError({
+          message: 'An unexpected error occurred while saving the enquiry',
+          details: []
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -88,10 +137,33 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
         {isEditMode ? 'Edit Enquiry' : 'Create New Enquiry'}
       </h2>
 
+      {/* Error display with detailed validation messages */}
       {error && (
-        <div className="mb-6 bg-red-50 border-l-4 border-red-500 p-4 text-red-700">
-          <p className="font-medium">Error</p>
-          <p>{error}</p>
+        <div className="mb-6 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200">
+          <div className="flex items-start">
+            <AlertCircle size={20} className="text-red-500 mt-0.5 mr-3 flex-shrink-0" />
+            <div className="flex-1">
+              <h3 className="font-medium text-red-800">{error.message}</h3>
+              {error.details && error.details.length > 0 && (
+                <div className="mt-2">
+                  <p className="text-sm text-red-700 font-medium mb-2">Details:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {error.details.map((detail, index) => (
+                      <li key={index} className="text-sm text-red-600">
+                        {detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <button 
+              onClick={() => setError(null)} 
+              className="text-red-500 hover:text-red-700 ml-4 flex-shrink-0"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
       )}
 
@@ -150,11 +222,15 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
             </label>
             <input
               id="phone"
-              type="text"
+              type="tel"
               {...register('phone', {
                 required: 'Phone number is required',
                 minLength: { value: 5, message: 'Phone must be at least 5 characters' },
-                maxLength: { value: 16, message: 'Phone cannot exceed 16 characters' }
+                maxLength: { value: 16, message: 'Phone cannot exceed 16 characters' },
+                pattern: {
+                  value: /^[\d\s\-\+\(\)]+$/,
+                  message: 'Please enter a valid phone number'
+                }
               })}
               className={`block w-full rounded-lg border ${errors.phone ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
               placeholder="Enter Your Phone Number"
@@ -179,7 +255,7 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
                 maxLength: { value: 150, message: 'Interest cannot exceed 150 characters' }
               })}
               className={`block w-full rounded-lg border ${errors.interest ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter Your Interest"
+              placeholder="What are you interested in?"
               disabled={isLoading}
             />
             {errors.interest && (
@@ -225,6 +301,9 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
                 <option value="in-progress">In Progress</option>
                 <option value="completed">Completed</option>
               </select>
+              {errors.status && (
+                <p className="mt-1 text-sm text-red-600">{errors.status.message}</p>
+              )}
             </div>
           )}
 
@@ -244,6 +323,9 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
                 <option value="medium">Medium</option>
                 <option value="high">High</option>
               </select>
+              {errors.priority && (
+                <p className="mt-1 text-sm text-red-600">{errors.priority.message}</p>
+              )}
             </div>
           )}
 
@@ -261,14 +343,14 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
               })}
               rows={4}
               className={`block w-full rounded-lg border ${errors.description ? 'border-red-500' : 'border-gray-300'} px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-              placeholder="Enter your description here"
+              placeholder="Please describe your enquiry in detail..."
               disabled={isLoading}
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              Max 1000 characters
+              Provide detailed information about your enquiry (max 1000 characters)
             </p>
           </div>
         </div>
@@ -277,7 +359,10 @@ const EnquiryForm: React.FC<EnquiryFormProps> = ({ enquiryId, initialData, onSuc
         <div className="mt-6 flex justify-end space-x-3 w-full">
           <button
             type="button"
-            onClick={() => reset()}
+            onClick={() => {
+              reset();
+              setError(null);
+            }}
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
             disabled={isLoading}
           >
