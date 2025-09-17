@@ -101,11 +101,11 @@ function Products() {
     };
 
     if (loading) {
-        return <div className="p-4 w-full">Loading data...</div>;
+        return <div className="p-4">Loading data...</div>;
     }
 
     if (error) {
-        return <div className="p-4 text-red-600 w-full">{error}</div>;
+        return <div className="p-4 text-red-600">{error}</div>;
     }
 
     return (
