@@ -59,7 +59,7 @@ function Appliance() {
       try {
         setIsLoading(true);
         setError(null);
-        const response = await axios.get(`${BASE_URL}/appliance`);
+        const response = await axios.get(`${BASE_URL}/appliance/no-pagination`);
         const { data } = response.data;
         
         // Set default values for quantity and wattage when loading data

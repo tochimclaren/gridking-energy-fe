@@ -48,22 +48,13 @@ const CategoryList: React.FC<CategoryListProps> = ({
     fetchCategories();
   }, [apiUrl]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-gray-600">Loading categories...</span>
-      </div>
-    );
-  }
+    if (loading) {
+        return <div className="p-4">Loading data...</div>;
+    }
 
-  if (error) {
-    return (
-      <div className="text-red-500 text-center py-4">
-        {error}
-      </div>
-    );
-  }
+    if (error) {
+        return <div className="p-4 text-red-600">{error}</div>;
+    }
 
   return (
     <div className="space-y-1">

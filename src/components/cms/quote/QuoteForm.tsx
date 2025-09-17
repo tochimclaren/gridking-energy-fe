@@ -26,10 +26,10 @@ interface Product {
 }
 
 interface QuoteFormProps {
-  quoteId?: string; // Optional - if provided, form is in edit mode
-  initialData?: FormData; // Optional - if provided, prefill the form with data rather fetching from server
-  onSuccess?: () => void; // Optional callback after successful submission
-  products?: Product[]; // Optional - list of available products
+  quoteId?: string;
+  initialData?: FormData;
+  onSuccess?: () => void;
+  products?: Product[];
 }
 
 const QuoteForm: React.FC<QuoteFormProps> = ({ 

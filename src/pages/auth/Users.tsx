@@ -94,7 +94,7 @@ const Users = () => {
     };
 
     if (loading) {
-        return <div className="text-center p-4">Loading data...</div>;
+        return <div className="p-4">Loading data...</div>;
     }
 
     if (error) {
