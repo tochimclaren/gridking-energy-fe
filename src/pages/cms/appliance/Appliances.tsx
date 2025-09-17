@@ -23,7 +23,7 @@ const Appliance = () => {
     const fetchData = async (page: number, limit: number) => {
         try {
             setLoading(true);
-            const response = await axios.get(`${BASE_URL}/appliance/no-pagination`, {
+            const response = await axios.get(`${BASE_URL}/appliance`, {
                 params: {
                     page,
                     limit
