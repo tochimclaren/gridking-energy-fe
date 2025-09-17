@@ -3,7 +3,8 @@ import axios from 'axios';
 import {
   FileText, Upload, X, Plus, AlertCircle, Loader2,
   Download, Trash2, Grid, List, Search, ChevronDown,
-  FileInput, FileArchive
+  FileInput, FileArchive,
+  RefreshCw
 } from 'lucide-react';
 
 interface ICategory {
@@ -720,10 +721,10 @@ const DownloadManager: React.FC<DownloadManagerProps> = ({
       {showUploadForm && renderUploadForm()}
 
       {loading ? (
-        <div className="text-center py-12">
-          <Loader2 className="inline-block h-8 w-8 animate-spin text-blue-600" />
-          <p className="mt-2 text-gray-600">Loading downloads...</p>
-        </div>
+      <div className="flex items-center justify-center h-64 w-full">
+        <RefreshCw className="animate-spin w-12 h-12 text-blue-500" />
+        <span className="ml-2 text-lg font-medium">Loading analytics data...</span>
+      </div>
       ) : (
         <>
           {downloads && (
