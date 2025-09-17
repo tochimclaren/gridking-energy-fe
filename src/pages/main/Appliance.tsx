@@ -2,7 +2,7 @@ import { useEffect, useState, ChangeEvent, KeyboardEvent } from 'react';
 import axios from 'axios';
 import ErrorMessage from '../../components/alerts/ErrorMessage';
 import Empty from '../../components/alerts/Empty';
-import Loader from '../../components/alerts/Loader';
+import { RefreshCw } from 'lucide-react';
 
 interface Appliance {
   _id: string;
@@ -224,7 +224,12 @@ function Appliance() {
 
   // Loading state
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="flex items-center justify-center h-64 w-full">
+        <RefreshCw className="animate-spin w-12 h-12 text-blue-500" />
+        <span className="ml-2 text-lg font-medium">Loading analytics data...</span>
+      </div>
+    );
   }
 
   // Error state

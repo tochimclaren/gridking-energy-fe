@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Image as ImageIcon, Grid, List, Search, ChevronDown,
-  X, Loader2, Star, Trash2, Download, AlertCircle,
-  ArrowLeft, ArrowRight, Image as ImagePreview
+  X, Star, Trash2, Download, AlertCircle,
+  ArrowLeft, ArrowRight, Image as ImagePreview,
+  RefreshCw
 } from 'lucide-react';
 
 
@@ -548,10 +549,10 @@ const ImageGallery: React.FC<ImageGalleryProps> = ({
       )}
 
       {loading ? (
-        <div className="text-center py-12">
-          <Loader2 className="inline-block h-8 w-8 animate-spin text-blue-600" />
-          <p className="mt-2 text-gray-600">Loading images...</p>
-        </div>
+      <div className="flex items-center justify-center h-64 w-full">
+        <RefreshCw className="animate-spin w-12 h-12 text-blue-500" />
+        <span className="ml-2 text-lg font-medium">Loading analytics data...</span>
+      </div>
       ) : (
         <>
           {images.length === 0 ? (
